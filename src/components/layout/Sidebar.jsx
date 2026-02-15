@@ -8,9 +8,7 @@ import {
 import { twMerge } from 'tailwind-merge';
 
 export default function Sidebar({ role, isOpen, onClose }) {
-  // 1. استدعاء دالة الترجمة
   const { t, i18n } = useTranslation();
-  
   const location = useLocation();
   const navigate = useNavigate();
   const isRTL = i18n.language === 'ar';
@@ -19,22 +17,21 @@ export default function Sidebar({ role, isOpen, onClose }) {
     const newLang = isRTL ? 'en' : 'ar';
     i18n.changeLanguage(newLang);
     document.dir = newLang === 'ar' ? 'rtl' : 'ltr';
-    // إضافة تحديث للصفحة لضمان تطبيق التغييرات على كل المكونات
-    // window.location.reload(); 
   };
 
-  // 2. استخدام t() بدلاً من النصوص الثابتة
+  // ✅ تم التعديل: استخدام screening.label
   const patientLinks = [
     { name: t('home'), path: '/patient-dashboard', icon: LayoutDashboard },
-    { name: t('screening'), path: '/screening', icon: Stethoscope },
-    // { name: t('labs'), path: '/labs', icon: FlaskConical  },
+    { name: t('screening.label'), path: '/screening', icon: Stethoscope }, 
     { name: t('messages'), path: '/messages', icon: MessageSquare },
     { name: t('settings'), path: '/settings', icon: Settings },
   ];
 
+  // ✅ تم التعديل: إضافة الفحص الذكي للطبيب
   const doctorLinks = [
     { name: t('dashboard'), path: '/doctor-dashboard', icon: LayoutDashboard },
     { name: t('appointments'), path: '/appointments', icon: Calendar },
+    { name: t('screening.label'), path: '/screening', icon: Stethoscope }, // تمت الإضافة هنا
     { name: t('messages'), path: '/messages', icon: MessageSquare },
     { name: t('settings'), path: '/settings', icon: Settings },
   ];
@@ -120,7 +117,6 @@ export default function Sidebar({ role, isOpen, onClose }) {
             className="flex items-center gap-3 px-4 py-3 rounded-xl w-full text-red-500 hover:bg-red-50 transition-all font-bold text-sm"
           >
             <LogOut size={18} />
-            {/* 3. ترجمة زر الخروج */}
             <span>{t('logout')}</span>
           </button>
         </div>
