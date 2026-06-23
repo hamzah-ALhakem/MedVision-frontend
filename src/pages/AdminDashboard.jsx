@@ -83,7 +83,7 @@ export default function AdminDashboard() {
     if(!window.confirm(t.alerts.approve)) return;
     try {
         await api.put(`/admin/doctors/${id}/approve`);
-        alert(t.alerts.successApprove);
+        console.log(t.alerts.successApprove);
         fetchAdminData();
     } catch (error) { alert(t.alerts.error); }
   };
@@ -92,7 +92,7 @@ export default function AdminDashboard() {
     if(!window.confirm(t.alerts.reject)) return;
     try {
         await api.put(`/admin/doctors/${id}/reject`);
-        alert(t.alerts.successReject);
+        console.log(t.alerts.successReject);
         fetchAdminData();
     } catch (error) { alert(t.alerts.error); }
   };
@@ -101,7 +101,7 @@ export default function AdminDashboard() {
       if(!window.confirm(t.alerts.delete)) return;
       try {
           await api.delete(`/admin/users/${id}`);
-          alert(t.alerts.successDelete);
+          console.log(t.alerts.successDelete);
           fetchAdminData();
       } catch (error) { alert(t.alerts.error); }
   };

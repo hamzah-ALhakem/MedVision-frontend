@@ -154,9 +154,9 @@ export default function PatientDashboard() {
       setSelectedDoctor(null);
       setBookingReason('');
       setSelectedSlot(null);
-      alert(t.modal.alerts.success);
+      console.log(t.modal.alerts.success);
     } catch (error) {
-      alert(t.modal.alerts.error);
+      console.log(t.modal.alerts.error);
     } finally {
       setIsBookingLoading(false);
     }

@@ -167,7 +167,7 @@ export default function Messages() {
         console.error("Failed to send", err);
         // يمكن هنا حذف الرسالة المؤقتة لإخبار المستخدم بالفشل
         setMessages(prev => prev.filter(m => m.id !== tempMsg.id));
-        alert("فشل إرسال الرسالة");
+        console.log("فشل إرسال الرسالة");
     }
   };
 

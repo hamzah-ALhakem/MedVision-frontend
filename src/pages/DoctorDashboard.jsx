@@ -55,7 +55,7 @@ export default function DoctorDashboard() {
         apt.id === id ? { ...apt, status: newStatus } : apt
       ));
     } catch (err) {
-      alert(t.error);
+      console.log(t.error);
     } finally {
       setActionLoading(null);
     }

@@ -6,6 +6,7 @@ import {
   LogOut, Settings, X, FlaskConical, ShieldCheck, Languages
 } from 'lucide-react';
 import { twMerge } from 'tailwind-merge';
+import logo from '../../assets/logo.png';
 
 export default function Sidebar({ role, isOpen, onClose }) {
   const { t, i18n } = useTranslation();
@@ -70,9 +71,11 @@ export default function Sidebar({ role, isOpen, onClose }) {
         {/* Logo Section */}
         <div className="h-20 flex items-center justify-between px-6 border-b border-gray-50">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center text-primary">
-              <Stethoscope size={24} />
-            </div>
+            <img
+              src={logo}
+              alt="MedVision"
+              className="w-12 h-12 object-contain"
+            />
             <span className="text-xl font-bold text-primary tracking-tight">MedVision</span>
           </div>
           <button onClick={onClose} className="md:hidden text-gray-400 hover:text-red-500 transition-colors p-1 rounded-full hover:bg-gray-100">

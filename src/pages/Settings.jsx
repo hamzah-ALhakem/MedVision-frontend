@@ -184,9 +184,9 @@ export default function Settings() {
             address: profile.address,
             specialty: profile.specialty
         });
-        alert(t.alerts.profileSuccess);
+        console.log(t.alerts.profileSuccess);
     } catch (error) {
-        alert(t.alerts.profileError);
+        console.log(t.alerts.profileError);
     } finally {
         setIsLoading(false);
     }
@@ -204,10 +204,10 @@ export default function Settings() {
               currentPassword: security.currentPassword,
               newPassword: security.newPassword
           });
-          alert(t.alerts.passSuccess);
+          console.log(t.alerts.passconsole.log);
           setSecurity({ currentPassword: '', newPassword: '', confirmPassword: '' });
       } catch (err) {
-          alert(err.response?.data?.message || t.alerts.passError);
+          console.log(err.response?.data?.message || t.alerts.passError);
       } finally {
           setIsLoading(false);
       }
@@ -219,10 +219,10 @@ export default function Settings() {
       setIsLoading(true);
       try {
           await api.post('/schedule', { schedule });
-          alert(t.alerts.scheduleSuccess);
+          console.log(t.alerts.scheduleSuccess);
       } catch (err) { 
           console.error(err);
-          alert(t.alerts.scheduleError); 
+          console.log(t.alerts.scheduleError); 
       }
       finally { setIsLoading(false); }
   };

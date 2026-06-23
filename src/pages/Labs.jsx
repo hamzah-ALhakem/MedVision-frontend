@@ -70,7 +70,7 @@ export default function Labs() {
   // --- Handlers ---
   const handleBooking = (e) => {
       e.preventDefault();
-      alert(`تم إرسال طلب الحجز لمعمل "${selectedLab.name}" بنجاح!`);
+      console.log(`تم إرسال طلب الحجز لمعمل "${selectedLab.name}" بنجاح!`);
       setSelectedLab(null);
       setBookingDate('');
   };
