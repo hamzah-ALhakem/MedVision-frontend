@@ -2,13 +2,13 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Bell, Menu, Check, MessageSquare, Calendar, ChevronDown, User, LogOut, Settings } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { useSocket } from '../../context/SocketContext';
+import { usePusher } from '../../context/PusherContext';
 import { useAuth } from '../../context/AuthContext';
 import api from '../../services/api';
 
 export default function Header({ user, onMenuClick }) {
   const navigate = useNavigate();
-  const socket = useSocket();
+  const { channel } = usePusher();
   const { t, i18n } = useTranslation();
   const isRTL = i18n.language === 'ar';
 
@@ -42,8 +42,8 @@ export default function Header({ user, onMenuClick }) {
   useEffect(() => {
     fetchNotifications();
 
-    if (socket) {
-      socket.on("receive_notification", (newNotif) => {
+    if (channel) {
+      channel.bind("receive_notification", (newNotif) => {
         if (newNotif.type === 'message') {
           const currentChatId = sessionStorage.getItem('activeChatId');
           if (currentChatId && parseInt(currentChatId) === parseInt(newNotif.relatedId)) return;
@@ -52,16 +52,16 @@ export default function Header({ user, onMenuClick }) {
         setNotifications((prev) => [newNotif, ...prev]);
       });
 
-      socket.on("refresh_notifications", fetchNotifications);
+      channel.bind("refresh_notifications", fetchNotifications);
     }
 
     return () => {
-      if (socket) {
-        socket.off("receive_notification");
-        socket.off("refresh_notifications");
+      if (channel) {
+        channel.unbind("receive_notification");
+        channel.unbind("refresh_notifications");
       }
     };
-  }, [socket]);
+  }, [channel]);
 
   // Click Outside hooks
   useEffect(() => {

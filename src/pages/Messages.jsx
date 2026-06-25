@@ -3,7 +3,7 @@ import { useLocation } from 'react-router-dom';
 import { Search, Send, ArrowRight, ArrowLeft, Loader2, User } from 'lucide-react';
 import api from '../services/api';
 import { useLanguage } from '../context/LanguageContext';
-import { useSocket } from '../context/SocketContext';
+import { usePusher } from '../context/PusherContext';
 import { useAuth } from '../context/AuthContext';
 
 const translations = {
@@ -31,7 +31,7 @@ export default function Messages() {
   const { language } = useLanguage();
   const t = translations[language];
   const location = useLocation();
-  const socket = useSocket();
+  const { channel } = usePusher();
   
   const [contacts, setContacts] = useState([]);
   const [activeChat, setActiveChat] = useState(null);
@@ -104,10 +104,10 @@ export default function Messages() {
 
   // 3. Real-time Listener (استقبال الرسائل الجديدة)
   useEffect(() => {
-    if (!socket) return;
+    if (!channel) return;
 
     const handleNewMessage = (newMsg) => {
-        console.log("⚡ New message via socket:", newMsg);
+        console.log("⚡ New message via pusher:", newMsg);
         
         // إذا وصلت رسالة، هل هي للشات المفتوح حالياً؟
         if (activeChat && (newMsg.senderId === activeChat.id || newMsg.receiverId === activeChat.id)) {
@@ -128,10 +128,10 @@ export default function Messages() {
         }
     };
 
-    socket.on("receive_message", handleNewMessage);
+    channel.bind("receive_message", handleNewMessage);
 
-    return () => socket.off("receive_message", handleNewMessage);
-  }, [socket, activeChat]);
+    return () => channel.unbind("receive_message", handleNewMessage);
+  }, [channel, activeChat]);
 
   // Scroll on update
   useEffect(() => {

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
-import { SocketProvider } from './context/SocketContext';
+import { PusherProvider } from './context/PusherContext';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 
 // Pages
@@ -23,7 +23,7 @@ import DashboardLayout from './components/layout/DashboardLayout';
 function App() {
   return (
     <AuthProvider>
-      <SocketProvider>
+      <PusherProvider>
         <Routes>
           <Route path="/" element={<HomePage />} />
           
@@ -56,7 +56,7 @@ function App() {
 
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
-      </SocketProvider>
+      </PusherProvider>
     </AuthProvider>
   );
 }
