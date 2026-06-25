@@ -5,7 +5,8 @@ import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
 import api from '../services/api';
 import logo from '../assets/logo.png'; 
-import { useLanguage } from '../context/LanguageContext'; // 1. استيراد السياق
+import { useLanguage } from '../context/LanguageContext';
+import { useAuth } from '../context/AuthContext';
 
 // 2. قاموس الترجمة
 const translations = {
@@ -47,8 +48,9 @@ const translations = {
 
 export default function Login() {
   const navigate = useNavigate();
-  const { language, toggleLanguage } = useLanguage(); // 3. استخدام الهوك
-  const t = translations[language]; // النصوص الحالية
+  const { language, toggleLanguage } = useLanguage(); 
+  const { login } = useAuth(); // Read login from AuthContext
+  const t = translations[language]; 
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
@@ -65,8 +67,8 @@ export default function Login() {
     try {
       const response = await api.post('/auth/login', formData);
       
-      localStorage.setItem('token', response.data.token);
-      localStorage.setItem('user', JSON.stringify(response.data.user));
+      // Update global auth state
+      login(response.data.token, response.data.user);
 
       const role = response.data.user.role.toLowerCase();
       
@@ -76,7 +78,6 @@ export default function Login() {
 
     } catch (err) {
       const msg = err.response?.data?.message;
-      // محاولة ترجمة رسائل الخطأ القادمة من الباك إند إذا تطابقت
       if (msg === 'حسابك قيد المراجعة من قبل الإدارة. يرجى الانتظار.') {
           setError(t.errors.pending);
       } else if (msg === 'نأسف، تم رفض طلب انضمامك.') {
@@ -144,7 +145,7 @@ export default function Login() {
                 required
               />
               <div className="flex justify-end">
-                <Link to="/forgot-password" class="text-xs font-bold text-primary hover:text-primary/80 transition-colors">
+                <Link to="/forgot-password" className="text-xs font-bold text-primary hover:text-primary/80 transition-colors">
                   {t.forgotPassword}
                 </Link>
               </div>
@@ -169,8 +170,6 @@ export default function Login() {
         <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center opacity-20 mix-blend-overlay"></div>
         <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
         <div className="absolute bottom-0 left-0 w-64 h-64 bg-white/10 rounded-full blur-2xl translate-y-1/3 -translate-x-1/3"></div>
-        
-       
       </div>
 
     </div>

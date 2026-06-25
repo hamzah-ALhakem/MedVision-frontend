@@ -1,6 +1,8 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { SocketProvider } from './context/SocketContext'; // 1. استيراد المزود
+import { AuthProvider } from './context/AuthContext';
+import { SocketProvider } from './context/SocketContext';
+import ProtectedRoute from './components/auth/ProtectedRoute';
 
 // Pages
 import Login from './pages/Login';
@@ -20,28 +22,42 @@ import DashboardLayout from './components/layout/DashboardLayout';
 
 function App() {
   return (
-    // 2. تغليف التطبيق بالكامل بـ SocketProvider
-    <SocketProvider>
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
+    <AuthProvider>
+      <SocketProvider>
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
 
-        <Route element={<DashboardLayout />}>
-          <Route path="/patient-dashboard" element={<PatientDashboard />} />
-          <Route path="/doctor-dashboard" element={<DoctorDashboard />} />
-          <Route path="/admin-dashboard" element={<AdminDashboard />} />
-          <Route path="/labs" element={<Labs />} />
-          <Route path="/screening" element={<Screening />} />
-          <Route path="/appointments" element={<Appointments />} />
-          <Route path="/messages" element={<Messages />} />
-          <Route path="/settings" element={<Settings />} />
-        </Route>
+          {/* Protected Routes */}
+          <Route element={<ProtectedRoute />}>
+            <Route element={<DashboardLayout />}>
+              <Route path="/labs" element={<Labs />} />
+              <Route path="/screening" element={<Screening />} />
+              <Route path="/appointments" element={<Appointments />} />
+              <Route path="/messages" element={<Messages />} />
+              <Route path="/settings" element={<Settings />} />
+              
+              {/* Role-Specific Protected Routes */}
+              <Route element={<ProtectedRoute allowedRoles={['patient']} />}>
+                <Route path="/patient-dashboard" element={<PatientDashboard />} />
+              </Route>
+              
+              <Route element={<ProtectedRoute allowedRoles={['doctor']} />}>
+                <Route path="/doctor-dashboard" element={<DoctorDashboard />} />
+              </Route>
+              
+              <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
+                <Route path="/admin-dashboard" element={<AdminDashboard />} />
+              </Route>
+            </Route>
+          </Route>
 
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
-    </SocketProvider>
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </SocketProvider>
+    </AuthProvider>
   );
 }
 

@@ -204,7 +204,7 @@ export default function Settings() {
               currentPassword: security.currentPassword,
               newPassword: security.newPassword
           });
-          console.log(t.alerts.passconsole.log);
+          console.log(t.alerts.passSuccess);
           setSecurity({ currentPassword: '', newPassword: '', confirmPassword: '' });
       } catch (err) {
           console.log(err.response?.data?.message || t.alerts.passError);

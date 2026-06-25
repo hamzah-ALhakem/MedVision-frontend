@@ -1,11 +1,6 @@
-
 // src/services/aiService.js
 
-// 🔴 القديم: كان يتصل مباشرة ويسبب CORS
-// const AI_API_URL = "https://breast-api-deploy.onrender.com/predict";
-
-// 🟢 الجديد: يتصل عبر البروكسي المحلي
-const AI_API_URL = "/api-ai/predict"; 
+import { AI_API_URL } from '../config/env';
 
 export const predictTumor = async (featuresArray) => {
   try {

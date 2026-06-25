@@ -3,6 +3,7 @@ import { Bell, Menu, Check, MessageSquare, Calendar, ChevronDown, User, LogOut, 
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useSocket } from '../../context/SocketContext';
+import { useAuth } from '../../context/AuthContext';
 import api from '../../services/api';
 
 export default function Header({ user, onMenuClick }) {
@@ -92,10 +93,10 @@ export default function Header({ user, onMenuClick }) {
     try { await api.put('/notifications/read'); } catch (e) { }
   };
 
+  const { logout } = useAuth();
+  
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    navigate('/login');
+    logout();
   };
 
   // --- Helper: Group Notifications ---

@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import Button from '../components/ui/Button';
 import logo from '../assets/logo.png'; 
+import { useAuth } from '../context/AuthContext';
 
 // 1. قاموس الترجمة
 const translations = {
@@ -95,8 +96,7 @@ const translations = {
 
 export default function HomePage() {
   const navigate = useNavigate();
-  const user = JSON.parse(localStorage.getItem('user'));
-  const isLoggedIn = !!user;
+  const { user, isAuthenticated: isLoggedIn } = useAuth();
 
   // 2. حالة اللغة
   const [lang, setLang] = useState(localStorage.getItem('lang') || 'ar');

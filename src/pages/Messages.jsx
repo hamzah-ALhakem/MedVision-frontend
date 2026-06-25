@@ -4,6 +4,7 @@ import { Search, Send, ArrowRight, ArrowLeft, Loader2, User } from 'lucide-react
 import api from '../services/api';
 import { useLanguage } from '../context/LanguageContext';
 import { useSocket } from '../context/SocketContext';
+import { useAuth } from '../context/AuthContext';
 
 const translations = {
   ar: {
@@ -40,8 +41,8 @@ export default function Messages() {
   const [isLoadingMessages, setIsLoadingMessages] = useState(false); // حالة تحميل للرسائل
   const messagesEndRef = useRef(null);
 
-  const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
-  const myId = currentUser.id;
+  const { user: currentUser } = useAuth();
+  const myId = currentUser?.id;
 
   // 1. Fetch Contacts (جلب جهات الاتصال)
   useEffect(() => {

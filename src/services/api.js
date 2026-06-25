@@ -1,12 +1,9 @@
 // src/services/api.js
 import axios from 'axios';
-
-// 🟢 التغيير هنا: نقرأ الرابط من متغيرات البيئة
-// في Vercel سيأخذ الرابط الحقيقي، وفي جهازك سيأخذ localhost
-const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+import { API_URL } from '../config/env';
 
 const api = axios.create({
-  baseURL: BASE_URL,
+  baseURL: API_URL,
   headers: {
     'Content-Type': 'application/json',
   },

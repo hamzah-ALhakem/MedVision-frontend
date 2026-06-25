@@ -3,6 +3,7 @@ import { Calendar, Clock, MapPin, Plus, Loader2, Check, X, FileText, User } from
 import Button from '../components/ui/Button';
 import api from '../services/api';
 import { useLanguage } from '../context/LanguageContext';
+import { useAuth } from '../context/AuthContext';
 
 const translations = {
   ar: {
@@ -39,8 +40,8 @@ export default function Appointments() {
   const [isLoading, setIsLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(null); 
   
-  const user = JSON.parse(localStorage.getItem('user') || '{}');
-  const isPatient = user.role === 'patient';
+  const { user } = useAuth();
+  const isPatient = user?.role === 'patient';
 
   const fetchAppointments = async () => {
     try {

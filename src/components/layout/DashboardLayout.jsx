@@ -3,18 +3,18 @@ import { Outlet } from 'react-router-dom';
 import { useTranslation } from 'react-i18next'; // 1. استيراد هوك الترجمة
 import Sidebar from './Sidebar'; // 2. استيراد مكون السايدبار المنفصل
 import Header from './Header';
+import { useAuth } from '../../context/AuthContext';
 
 export default function DashboardLayout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const { user } = useAuth(); // Read from AuthContext
   
   // 3. معرفة اللغة والاتجاه الحالي
   const { i18n } = useTranslation();
   const isRTL = i18n.language === 'ar';
 
-  // قراءة بيانات المستخدم
-  const user = JSON.parse(localStorage.getItem('user') || '{}');
   // توحيد صيغة الدور (lowercase) لتجنب مشاكل الأحرف الكبيرة
-  const role = user.role ? user.role.toLowerCase() : 'patient';
+  const role = user?.role ? user.role.toLowerCase() : 'patient';
 
   return (
     // 4. ضبط اتجاه الصفحة ديناميكياً بناءً على اللغة

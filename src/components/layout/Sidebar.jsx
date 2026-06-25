@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { twMerge } from 'tailwind-merge';
 import logo from '../../assets/logo.png';
+import { useAuth } from '../../context/AuthContext';
 
 export default function Sidebar({ role, isOpen, onClose }) {
   const { t, i18n } = useTranslation();
@@ -24,6 +25,7 @@ export default function Sidebar({ role, isOpen, onClose }) {
   const patientLinks = [
     { name: t('home'), path: '/patient-dashboard', icon: LayoutDashboard },
     { name: t('screening.label'), path: '/screening', icon: Stethoscope }, 
+    { name: t('labs'), path: '/labs', icon: FlaskConical },
     { name: t('messages'), path: '/messages', icon: MessageSquare },
     { name: t('settings'), path: '/settings', icon: Settings },
   ];
@@ -32,7 +34,8 @@ export default function Sidebar({ role, isOpen, onClose }) {
   const doctorLinks = [
     { name: t('dashboard'), path: '/doctor-dashboard', icon: LayoutDashboard },
     { name: t('appointments'), path: '/appointments', icon: Calendar },
-    { name: t('screening.label'), path: '/screening', icon: Stethoscope }, // تمت الإضافة هنا
+    { name: t('screening.label'), path: '/screening', icon: Stethoscope },
+    { name: t('labs'), path: '/labs', icon: FlaskConical },
     { name: t('messages'), path: '/messages', icon: MessageSquare },
     { name: t('settings'), path: '/settings', icon: Settings },
   ];
@@ -45,10 +48,10 @@ export default function Sidebar({ role, isOpen, onClose }) {
 
   const links = role === 'admin' ? adminLinks : (role === 'doctor' ? doctorLinks : patientLinks);
 
+  const { logout } = useAuth();
+
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    navigate('/login');
+    logout();
   };
 
   return (

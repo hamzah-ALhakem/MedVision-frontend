@@ -3,77 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Calendar, Loader2, Clock, X, MessageCircle, MapPin, AlertCircle } from 'lucide-react';
 import api from '../services/api';
 import Button from '../components/ui/Button';
-import { useLanguage } from '../context/LanguageContext'; // 1. استيراد السياق
-
-// 2. قاموس الترجمة
-const translations = {
-  ar: {
-    hero: {
-      title: 'ابحث عن أفضل الأطباء 🩺',
-      desc: 'احجز موعدك الآن بكل سهولة.'
-    },
-    list: {
-      title: 'الأطباء المتاحون',
-      empty: 'لا يوجد أطباء متاحين حالياً.'
-    },
-    card: {
-      defaultSpecialty: 'تخصص عام',
-      noAddress: 'العنوان غير محدد',
-      shiftsTitle: 'المواعيد المتاحة',
-      noShifts: 'لا توجد مواعيد متاحة',
-      more: 'عرض المزيد +',
-      status: { confirmed: 'تم تأكيد الحجز ✅', pending: 'بانتظار الموافقة' },
-      btn: { chat: 'مراسلة الطبيب', book: 'حجز موعد', pending: 'قيد الانتظار' }
-    },
-    modal: {
-      title: 'حجز موعد جديد',
-      slotsLabel: 'المواعيد المتاحة',
-      noSlots: 'هذا الطبيب لم يحدد مواعيد عمل بعد.',
-      reasonLabel: 'سبب الزيارة',
-      reasonPlaceholder: 'اكتب باختصار سبب الحجز...',
-      btnConfirm: 'تأكيد الحجز',
-      btnSelectFirst: 'اختر موعداً أولاً',
-      alerts: {
-        selectSlot: 'يرجى اختيار موعد',
-        success: 'تم إرسال طلب الحجز بنجاح!',
-        error: 'فشل الحجز، حاول مرة أخرى'
-      }
-    }
-  },
-  en: {
-    hero: {
-      title: 'Find Best Doctors 🩺',
-      desc: 'Book your appointment now with elite consultants in various medical specialties easily.'
-    },
-    list: {
-      title: 'Available Doctors',
-      empty: 'No doctors available at the moment.'
-    },
-    card: {
-      defaultSpecialty: 'General Specialty',
-      noAddress: 'Address not specified',
-      shiftsTitle: 'Available Shifts',
-      noShifts: 'No shifts available',
-      more: 'Show more +',
-      status: { confirmed: 'Booking Confirmed ✅', pending: 'Pending Approval' },
-      btn: { chat: 'Message Doctor', book: 'Book Appointment', pending: 'Pending' }
-    },
-    modal: {
-      title: 'Book New Appointment',
-      slotsLabel: 'Available Slots',
-      noSlots: 'This doctor has not set working hours yet.',
-      reasonLabel: 'Visit Reason',
-      reasonPlaceholder: 'Briefly describe reason for visit...',
-      btnConfirm: 'Confirm Booking',
-      btnSelectFirst: 'Select a slot first',
-      alerts: {
-        selectSlot: 'Please select a slot',
-        success: 'Booking request sent successfully!',
-        error: 'Booking failed, please try again'
-      }
-    }
-  }
-};
+import { useTranslation } from 'react-i18next';
 
 // خريطة أيام الأسبوع للترجمة
 const daysMap = {
@@ -83,8 +13,8 @@ const daysMap = {
 
 export default function PatientDashboard() {
   const navigate = useNavigate();
-  const { language } = useLanguage(); // 3. استخدام الهوك
-  const t = translations[language];
+  const { t, i18n } = useTranslation();
+  const language = i18n.language;
 
   const [doctors, setDoctors] = useState([]);
   const [myAppointments, setMyAppointments] = useState([]);
@@ -133,7 +63,7 @@ export default function PatientDashboard() {
   // 3. Submit Booking
   const handleBookingSubmit = async (e) => {
     e.preventDefault();
-    if (!selectedSlot) return alert(t.modal.alerts.selectSlot);
+    if (!selectedSlot) return alert(t('patientDashboard.modal.alerts.selectSlot'));
 
     setIsBookingLoading(true);
     try {
@@ -154,9 +84,9 @@ export default function PatientDashboard() {
       setSelectedDoctor(null);
       setBookingReason('');
       setSelectedSlot(null);
-      console.log(t.modal.alerts.success);
+      console.log(t('patientDashboard.modal.alerts.success'));
     } catch (error) {
-      console.log(t.modal.alerts.error);
+      console.log(t('patientDashboard.modal.alerts.error'));
     } finally {
       setIsBookingLoading(false);
     }
@@ -192,9 +122,9 @@ export default function PatientDashboard() {
         
         <div className="relative z-10 flex flex-col md:flex-row justify-between items-center gap-6">
             <div className="max-w-xl">
-                <h1 className="text-3xl md:text-4xl font-bold mb-3 leading-tight">{t.hero.title}</h1>
+                <h1 className="text-3xl md:text-4xl font-bold mb-3 leading-tight">{t('patientDashboard.hero.title')}</h1>
                 <p className="text-blue-100 text-lg opacity-90 leading-relaxed">
-                    {t.hero.desc}
+                    {t('patientDashboard.hero.desc')}
                 </p>
             </div>
         </div>
@@ -204,7 +134,7 @@ export default function PatientDashboard() {
       <div>
         <div className="flex justify-between items-center mb-6">
             <h3 className="text-xl font-bold text-dark flex items-center gap-2">
-                {t.list.title} <span className="bg-blue-50 text-primary text-xs px-2 py-1 rounded-full">{doctors.length}</span>
+                {t('patientDashboard.list.title')} <span className="bg-blue-50 text-primary text-xs px-2 py-1 rounded-full">{doctors.length}</span>
             </h3>
         </div>
 
@@ -230,9 +160,9 @@ export default function PatientDashboard() {
                         </div>
                         <div>
                             <h4 className="font-bold text-dark text-lg group-hover:text-primary transition-colors">{getDocName(doc)}</h4>
-                            <p className="text-sm text-gray-500 font-medium mb-1">{doc.specialty || t.card.defaultSpecialty}</p>
+                            <p className="text-sm text-gray-500 font-medium mb-1">{doc.specialty || t('patientDashboard.card.defaultSpecialty')}</p>
                             <div className="flex items-center gap-1 text-xs text-gray-400">
-                                <MapPin size={12} /> <span>{doc.clinicAddress || t.card.noAddress}</span>
+                                <MapPin size={12} /> <span>{doc.clinicAddress || t('patientDashboard.card.noAddress')}</span>
                             </div>
                         </div>
                     </div>
@@ -240,7 +170,7 @@ export default function PatientDashboard() {
 
                   {/* Shifts Preview */}
                   <div className="mb-6 mt-auto">
-                    <p className="text-[10px] font-bold text-gray-400 uppercase mb-2">{t.card.shiftsTitle}</p>
+                    <p className="text-[10px] font-bold text-gray-400 uppercase mb-2">{t('patientDashboard.card.shiftsTitle')}</p>
                     <div className="flex flex-col gap-1.5">
                       {doc.schedule && doc.schedule.filter(s => s.is_active).length > 0 ? (
                           doc.schedule.filter(s => s.is_active).slice(0, 3).map((s, i) => (
@@ -251,11 +181,11 @@ export default function PatientDashboard() {
                           ))
                       ) : (
                           <div className="text-[10px] text-red-400 flex items-center gap-1 bg-red-50 px-2 py-1 rounded">
-                              <AlertCircle size={10}/> {t.card.noShifts}
+                              <AlertCircle size={10}/> {t('patientDashboard.card.noShifts')}
                           </div>
                       )}
                       {(doc.schedule?.filter(s => s.is_active).length || 0) > 3 && (
-                          <span className="text-[10px] text-center bg-gray-50 text-gray-400 px-2 py-1 rounded-lg border border-gray-100">{t.card.more}</span>
+                          <span className="text-[10px] text-center bg-gray-50 text-gray-400 px-2 py-1 rounded-lg border border-gray-100">{t('patientDashboard.card.more')}</span>
                       )}
                     </div>
                   </div>
@@ -265,18 +195,18 @@ export default function PatientDashboard() {
                     {status === 'confirmed' ? (
                       <div className="space-y-2">
                           <div className="bg-green-50 text-green-700 text-xs font-bold py-2 rounded-xl text-center border border-green-100">
-                              {t.card.status.confirmed}
+                              {t('patientDashboard.card.status.confirmed')}
                           </div>
                           <button
                             onClick={() => startChat(doc)}
                             className="w-full py-3 rounded-xl bg-white border-2 border-primary text-primary font-bold text-sm hover:bg-primary hover:text-white transition-all flex items-center justify-center gap-2"
                           >
-                            <MessageCircle size={18} /> {t.card.btn.chat}
+                            <MessageCircle size={18} /> {t('patientDashboard.card.btn.chat')}
                           </button>
                       </div>
                     ) : status === 'pending' ? (
                       <button disabled className="w-full py-3 rounded-xl bg-orange-50 text-orange-600 font-bold text-sm border border-orange-100 flex items-center justify-center gap-2 cursor-default">
-                        <Clock size={18} /> {t.card.btn.pending}
+                        <Clock size={18} /> {t('patientDashboard.card.btn.pending')}
                       </button>
                     ) : (
                       <button
@@ -286,7 +216,7 @@ export default function PatientDashboard() {
                         }}
                         className="w-full py-3.5 rounded-xl bg-primary text-white font-bold text-sm hover:bg-primary-hover shadow-lg shadow-primary/20 hover:shadow-xl transition-all flex items-center justify-center gap-2"
                       >
-                        <Calendar size={18} /> {t.card.btn.book}
+                        <Calendar size={18} /> {t('patientDashboard.card.btn.book')}
                       </button>
                     )}
                   </div>
@@ -297,7 +227,7 @@ export default function PatientDashboard() {
           </div>
         ) : (
           <div className="p-12 text-center bg-white rounded-3xl border border-dashed border-gray-200">
-            <p className="text-gray-400 font-medium">{t.list.empty}</p>
+            <p className="text-gray-400 font-medium">{t('patientDashboard.list.empty')}</p>
           </div>
         )}
       </div>
@@ -310,7 +240,7 @@ export default function PatientDashboard() {
             {/* Modal Header */}
             <div className="px-8 py-6 border-b border-gray-50 bg-gray-50/50 flex justify-between items-center">
               <div>
-                <h2 className="text-xl font-bold text-dark">{t.modal.title}</h2>
+                <h2 className="text-xl font-bold text-dark">{t('patientDashboard.modal.title')}</h2>
                 <p className="text-sm text-gray-500 font-medium mt-0.5">{getDocName(selectedDoctor)}</p>
               </div>
               <button 
@@ -325,7 +255,7 @@ export default function PatientDashboard() {
               
               {/* Slot Selection */}
               <div className="space-y-3">
-                <label className="text-sm font-bold text-dark block">{t.modal.slotsLabel}</label>
+                <label className="text-sm font-bold text-dark block">{t('patientDashboard.modal.slotsLabel')}</label>
                 <div className="grid grid-cols-1 gap-2.5 max-h-60 overflow-y-auto custom-scrollbar pr-1">
                   {selectedDoctor.schedule?.filter(s => s.is_active).length > 0 ? (
                     selectedDoctor.schedule.filter(s => s.is_active).map((s, idx) => (
@@ -351,7 +281,7 @@ export default function PatientDashboard() {
                     ))
                   ) : (
                     <div className="text-center text-red-400 py-6 border-2 border-dashed border-red-50 rounded-xl bg-red-50/10 text-sm font-medium">
-                      {t.modal.noSlots}
+                      {t('patientDashboard.modal.noSlots')}
                     </div>
                   )}
                 </div>
@@ -359,9 +289,9 @@ export default function PatientDashboard() {
 
               {/* Reason */}
               <div className="space-y-2">
-                <label className="text-sm font-bold text-dark block">{t.modal.reasonLabel}</label>
+                <label className="text-sm font-bold text-dark block">{t('patientDashboard.modal.reasonLabel')}</label>
                 <textarea
-                  placeholder={t.modal.reasonPlaceholder}
+                  placeholder={t('patientDashboard.modal.reasonPlaceholder')}
                   rows="2"
                   className="w-full p-4 bg-gray-50 rounded-xl border-2 border-transparent focus:bg-white focus:border-primary outline-none transition-all text-sm resize-none font-medium placeholder:text-gray-400"
                   value={bookingReason}
@@ -373,8 +303,8 @@ export default function PatientDashboard() {
               {/* Submit */}
               <Button type="submit" isLoading={isBookingLoading} disabled={!selectedSlot} className="w-full py-4 text-base shadow-xl shadow-primary/20">
                 {selectedSlot
-                  ? `${t.modal.btnConfirm} (${displayDay(selectedSlot.day_of_week)})`
-                  : t.modal.btnSelectFirst}
+                  ? `${t('patientDashboard.modal.btnConfirm')} (${displayDay(selectedSlot.day_of_week)})`
+                  : t('patientDashboard.modal.btnSelectFirst')}
               </Button>
             </form>
           </div>
