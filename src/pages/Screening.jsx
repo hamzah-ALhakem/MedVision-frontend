@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import { predictTumor } from '../services/aiService';
 import { 
   Activity, AlertCircle, CheckCircle, RotateCcw, 
-  FileText, Trash2, Info, ChevronRight, BarChart3 
+  FileText, Trash2, Info, ChevronRight, BarChart3, UploadCloud
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { extractFeaturesFromImage, FEATURE_ORDER } from '../utils/wdbcOcr.js';
 
 export default function Screening() {
   const { t, i18n } = useTranslation();
@@ -13,6 +14,9 @@ export default function Screening() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null); 
   const [error, setError] = useState('');
+  const [ocrLoading, setOcrLoading] = useState(false);
+  const [ocrProgress, setOcrProgress] = useState(0);
+  const [valuesConfirmed, setValuesConfirmed] = useState(false);
 
   const featuresList = [
     "Radius", "Texture", "Perimeter", "Area", "Smoothness",
@@ -43,12 +47,45 @@ export default function Screening() {
     setFormData(testData);
     setResult(null);
     setError('');
+    setValuesConfirmed(true);
   };
 
   const clearForm = () => {
     setFormData(Array(30).fill(''));
     setResult(null);
     setError('');
+    setValuesConfirmed(false);
+  };
+
+  const handleFileUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setOcrLoading(true);
+    setOcrProgress(0);
+    setError('');
+    setResult(null);
+    setValuesConfirmed(false);
+
+    try {
+      const result = await extractFeaturesFromImage(file, (progress) => {
+        setOcrProgress(progress);
+      });
+
+      const newFormData = FEATURE_ORDER.map(feature => 
+        result.features[feature] !== undefined ? result.features[feature] : ''
+      );
+      setFormData(newFormData);
+      
+      if (!result.allFeaturesDetected) {
+        setError(isRTL ? `تحذير: لم يتم اكتشاف جميع الخصائص.` : `Warning: Could not detect all features. Missing: ${result.missingFeatures.join(', ')}`);
+      }
+    } catch (err) {
+      setError(err.message || (isRTL ? 'فشل استخراج البيانات من الصورة.' : 'Failed to extract features from image.'));
+    } finally {
+      setOcrLoading(false);
+      e.target.value = null;
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -61,7 +98,13 @@ export default function Screening() {
       const featuresArray = formData.map(val => parseFloat(val));
       if (featuresArray.some(isNaN)) throw new Error(isRTL ? "يرجى ملء كافة الحقول بأرقام صحيحة" : "Please enter valid numbers for all fields");
 
-      const response = await predictTumor(featuresArray);
+      const res = await fetch('https://medvision-ocr-api.onrender.com/predict', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ features: featuresArray })
+      });
+      if (!res.ok) throw new Error('Prediction request failed');
+      const response = await res.json();
       
       let diagnosisVal = 0;
       // ما زلنا نستقبل القيمة ولكن لا نعرضها
@@ -124,6 +167,37 @@ export default function Screening() {
         <div className="lg:col-span-8 space-y-6">
           <form id="screening-form" onSubmit={handleSubmit}>
             
+            <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-6 flex flex-col items-center justify-center border-dashed border-2 hover:border-primary/50 transition-colors">
+              <input type="file" id="ocr-upload" accept="image/png,image/jpeg" className="hidden" onChange={handleFileUpload} disabled={ocrLoading} />
+              <label htmlFor="ocr-upload" className={`cursor-pointer flex flex-col items-center justify-center space-y-2 ${ocrLoading ? 'text-gray-400' : 'text-gray-500 hover:text-primary'} transition-colors`}>
+                <UploadCloud size={32} />
+                <span className="font-bold text-sm">{isRTL ? 'تحميل التقرير الطبي (PNG, JPG)' : 'Upload Medical Report (PNG, JPG)'}</span>
+              </label>
+              {ocrLoading && (
+                <div className="mt-4 w-full max-w-xs">
+                  <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                    <div className="h-full bg-primary transition-all duration-300" style={{ width: `${ocrProgress}%` }}></div>
+                  </div>
+                  <p className="text-xs text-center mt-2 text-gray-500 font-bold">{isRTL ? `جاري المسح... ${ocrProgress}%` : `Scanning... ${ocrProgress}%`}</p>
+                </div>
+              )}
+            </div>
+
+            {hasData && (
+              <div className="bg-blue-50/50 p-4 rounded-xl border border-blue-100 mb-6 flex items-center gap-3 shadow-sm transition-all">
+                <input 
+                  type="checkbox" 
+                  id="confirm-values" 
+                  checked={valuesConfirmed}
+                  onChange={(e) => setValuesConfirmed(e.target.checked)}
+                  className="w-5 h-5 rounded text-primary focus:ring-primary/20 cursor-pointer" 
+                />
+                <label htmlFor="confirm-values" className="text-sm font-bold text-blue-900 cursor-pointer select-none">
+                  {isRTL ? 'لقد قمت بمراجعة وتأكيد القيم المستخرجة.' : 'I reviewed and confirmed the extracted values.'}
+                </label>
+              </div>
+            )}
+
             {groups.map((group, groupIdx) => (
               <div key={groupIdx} className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-6">
                 <div className={`px-6 py-4 border-b border-gray-50 flex items-center gap-3 ${group.bg}`}>
@@ -241,7 +315,7 @@ export default function Screening() {
                   <button
                     form="screening-form"
                     type="submit"
-                    disabled={loading}
+                    disabled={loading || !valuesConfirmed || formData.some(val => val === '' || isNaN(parseFloat(val)))}
                     className="w-full py-4 bg-primary text-white rounded-xl font-bold text-lg hover:shadow-lg hover:shadow-primary/30 hover:-translate-y-0.5 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center gap-2"
                   >
                     <Activity size={20} /> {t('screening.analyze')}
