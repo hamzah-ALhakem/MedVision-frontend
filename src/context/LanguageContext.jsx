@@ -2,6 +2,8 @@ import React, { createContext, useState, useContext, useEffect } from 'react';
 
 const LanguageContext = createContext();
 
+export { LanguageContext };
+
 export const LanguageProvider = ({ children }) => {
   // قراءة اللغة المحفوظة أو الافتراضي "ar"
   const [language, setLanguage] = useState(localStorage.getItem('lang') || 'ar');

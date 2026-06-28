@@ -15,4 +15,17 @@ export default defineConfig({
       },
     },
   },
+  // ─── Vitest configuration ───────────────────────────────────────────────────
+  test: {
+    globals: true,
+    environment: 'jsdom',
+    setupFiles: './src/tests/setup.js',
+    css: false,
+    // Don't try to transform node_modules except specific packages
+    server: {
+      deps: {
+        inline: ['@testing-library/user-event'],
+      },
+    },
+  },
 })
