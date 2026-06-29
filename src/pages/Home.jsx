@@ -16,7 +16,7 @@ const translations = {
       badge: ' الجيل الجديد من الرعاية الطبية',
       title1: 'رعايتك الصحية،',
       title2: 'بذكاء المستقبل.',
-      desc: 'منصة طبية تجمع بين مختلف الأطباء وتقنيات الذكاء الاصطناعي للكشف المبكر عن الأورام  .',
+      desc: 'منصة طبية تجمع بين مختلف الأطباء وتقنيات الذكاء الاصطناعي للكشف المبكر عن سرطان الثدي.',
       btnPrimary: 'جرب الفحص الذكي',
       btnSecondary: 'سجل كطبيب / مريض',
       security: 'بيانات آمنة 100%',
@@ -29,27 +29,27 @@ const translations = {
       subtitle: 'نوفر لك تجربة طبية تبدأ من التشخيص الذكي وحتى العلاج والمتابعة.',
       cards: [
         { title: 'حجز مواعيد الأطباء', desc: 'اختر أحد الأطباء في مختلف التخصصات واحجز موعدك بضغطة زر.' },
-        { title: 'فحص الأورام بالذكاء الاصطناعي', desc: 'تقنية متطورة لتحليل البيانات الخلوية والكشف عن احتمالية وجود أورام بدقة عالية.' }
+        { title: 'فحص سرطان الثدي بالذكاء الاصطناعي', desc: 'تقنية متطورة لتحليل البيانات الخلوية والكشف عن احتمالية وجود سرطان الثدي بدقة عالية.' }
         // تم إزالة المعامل الطبية من هنا
       ],
       btnMore: 'اكتشف المزيد'
     },
     ai: {
-      badge: 'AI Screening Technology',
+      badge: 'تقنية الفحص الذكي',
       title: 'كشف مبكر، حياة أفضل.',
-      desc: 'يستخدم نموذجنا خوارزميات التعلم العميق (Deep Learning) لتحليل البيانات الطبية بدقة تتجاوز الطرق التقليدية، مما يساعد في اتخاذ قرارات طبية أسرع وأدق.',
+      desc: 'يستخدم نموذجنا تقنيات متطورة لتحليل البيانات الطبية بأسلوب مبسط ودقيق، مما يوفر لك ولطبيبك الاطمئنان ويساعد في اتخاذ قرارات سريعة وموثوقة.',
       btn: 'ابدأ الفحص الآن',
       resultLabel: 'نتيجة التحليل',
       confidence: 'الثقة'
     },
-    footer: {
-      desc: 'منصة طبية رائدة تهدف لتحسين جودة الرعاية الصحية باستخدام أحدث تقنيات الذكاء الاصطناعي.',
-      linksTitle: 'روابط سريعة',
-      links: ['الرئيسية', 'عن المشروع', 'الفريق'],
-      contactTitle: 'تواصل معنا',
-      // تم جعل السنة متغيرة هنا
-      rights: `© ${new Date().getFullYear()} مشروع MedVision. جميع الحقوق محفوظة.`
-    }
+      footer: {
+        desc: 'منصة طبية رائدة تهدف لتحسين جودة الرعاية الصحية باستخدام أحدث تقنيات الذكاء الاصطناعي.',
+        linksTitle: 'روابط سريعة',
+        links: ['الرئيسية', 'عن المشروع'],
+        contactTitle: 'تواصل معنا',
+        // تم جعل السنة متغيرة هنا
+        rights: `© ${new Date().getFullYear()} مشروع MedVision. جميع الحقوق محفوظة.`
+      }
   },
   en: {
     nav: { services: 'Services', ai: 'AI Feature', doctors: 'Doctors', login: 'Login', signup: 'Sign Up', dashboard: 'Dashboard' },
@@ -57,7 +57,7 @@ const translations = {
       badge: ' Next Gen Healthcare',
       title1: 'Your Healthcare,',
       title2: 'Powered by AI.',
-      desc: 'An integrated medical platform combining various doctors with state-of-the-art AI technology for early tumor detection .',
+      desc: 'An integrated medical platform combining various doctors with state-of-the-art AI technology for early breast cancer detection.',
       btnPrimary: 'Try AI Screening',
       btnSecondary: 'Register Now',
       security: '100% Secure Data',
@@ -70,7 +70,7 @@ const translations = {
       subtitle: 'We provide an integrated medical experience starting from smart diagnosis to treatment and follow-up.',
       cards: [
         { title: 'Book Doctor Appointments', desc: 'Choose from hundreds of doctors in various specialties and book your appointment with a click.' },
-        { title: 'AI Tumor Screening', desc: 'Advanced technology to analyze cellular data and detect potential tumors with high precision.' }
+        { title: 'AI Breast Cancer Screening', desc: 'Advanced technology to analyze cellular data and detect potential breast cancer with high precision.' }
         // Removed Medical Labs
       ],
       btnMore: 'Discover More'
@@ -83,14 +83,14 @@ const translations = {
       resultLabel: 'Analysis Result',
       confidence: 'Confidence'
     },
-    footer: {
-      desc: 'A leading medical platform aiming to improve healthcare quality using the latest AI technologies.',
-      linksTitle: 'Quick Links',
-      links: ['Home', 'About Us', 'Team'],
-      contactTitle: 'Contact Us',
-      // Dynamic Year
-      rights: `© ${new Date().getFullYear()} MedVision Project. All rights reserved.`
-    }
+      footer: {
+        desc: 'A leading medical platform aiming to improve healthcare quality using the latest AI technologies.',
+        linksTitle: 'Quick Links',
+        links: ['Home', 'About Us'],
+        contactTitle: 'Contact Us',
+        // Dynamic Year
+        rights: `© ${new Date().getFullYear()} MedVision Project. All rights reserved.`
+      }
   }
 };
 
@@ -166,7 +166,7 @@ export default function HomePage() {
       </nav>
 
       {/* --- Hero Section --- */}
-      <header className="relative pt-32 pb-20 px-6 overflow-hidden">
+      <header className="relative pt-24 md:pt-32 pb-12 md:pb-20 px-6 overflow-hidden">
         <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center">
           
           <div className={`space-y-6 z-10 animate-in fade-in duration-700 ${lang === 'ar' ? 'slide-in-from-right-8' : 'slide-in-from-left-8'}`}>
@@ -204,9 +204,9 @@ export default function HomePage() {
       </header>
 
       {/* --- Services Section --- */}
-      <section id="services" className="py-20 bg-gray-50">
+      <section id="services" className="py-12 md:py-20 bg-gray-50">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center mb-16">
+          <div className="text-center mb-8 md:mb-16">
             <h2 className="text-3xl font-bold text-dark mb-4">{t.services.title}</h2>
             <p className="text-gray-500 max-w-xl mx-auto">{t.services.subtitle}</p>
           </div>
@@ -238,7 +238,7 @@ export default function HomePage() {
       </section>
 
       {/* --- AI Feature --- */}
-      <section id="ai-feature" className="py-20 overflow-hidden">
+      <section id="ai-feature" className="py-12 md:py-20 overflow-hidden">
         <div className="max-w-7xl mx-auto px-6">
           <div className="bg-primary rounded-[3rem] p-10 md:p-16 text-white relative overflow-hidden shadow-2xl shadow-blue-200">
             <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3"></div>
@@ -260,18 +260,16 @@ export default function HomePage() {
                 </Button>
               </div>
               
-              <div className="relative h-64 md:h-full bg-white/10 rounded-2xl border border-white/20 backdrop-blur-sm p-6 flex items-center justify-center">
-                 <div className="bg-white rounded-xl p-4 shadow-xl w-full max-w-xs text-dark animate-pulse">
-                    <div className="flex items-center gap-3 mb-4 border-b border-gray-100 pb-2">
-                        <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center text-green-600"><ShieldCheck size={16}/></div>
-                        <div className="font-bold text-sm">{t.ai.resultLabel}</div>
+              <div className="relative h-64 md:h-full bg-white/5 rounded-3xl border border-white/10 backdrop-blur-md p-6 flex items-center justify-center">
+                 <div className="bg-white/90 backdrop-blur-xl rounded-2xl p-5 shadow-2xl w-full max-w-xs text-dark hover:-translate-y-2 transition-transform duration-500">
+                    <div className="flex items-center gap-3 mb-4 border-b border-gray-100/50 pb-3">
+                        <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+                        <div className="font-bold text-sm tracking-wide text-gray-800">{t.ai.resultLabel}</div>
                     </div>
-                    <div className="space-y-2">
-                        <div className="h-2 bg-gray-100 rounded w-3/4"></div>
-                        <div className="h-2 bg-gray-100 rounded w-1/2"></div>
-                    </div>
-                    <div className="mt-4 pt-2 border-t border-gray-50 flex justify-between items-center">
-                        
+                    <div className="space-y-3">
+                        <div className="h-2 bg-gray-200 rounded-full w-3/4"></div>
+                        <div className="h-2 bg-gray-100 rounded-full w-1/2"></div>
+                        <div className="h-2 bg-gray-50 rounded-full w-2/3 mt-2"></div>
                     </div>
                  </div>
               </div>
@@ -281,14 +279,12 @@ export default function HomePage() {
       </section>
 
       {/* --- Footer --- */}
-      <footer className="bg-white border-t border-gray-100 py-12">
+      <footer className="bg-white border-t border-gray-100 py-8 md:py-12">
         <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-4 gap-8">
             <div className="col-span-1 md:col-span-2">
                 <div className="flex items-center gap-2 mb-4">
-                    <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-white">
-                        <Stethoscope size={18} />
-                    </div>
-                    <span className="text-xl font-bold text-primary">MedVision</span>
+                    <img src={logo} alt="MedVision Logo" className="w-10 h-10 object-contain" />
+                    <span className="text-xl font-bold text-primary tracking-tight">MedVision</span>
                 </div>
                 <p className="text-gray-400 text-sm leading-relaxed max-w-xs">
                   {t.footer.desc}
@@ -298,22 +294,20 @@ export default function HomePage() {
             <div>
                 <h4 className="font-bold text-dark mb-4">{t.footer.linksTitle}</h4>
                 <ul className="space-y-2 text-sm text-gray-500">
-                    <li><a href="#" className="hover:text-primary">{t.footer.links[0]}</a></li>
-                    <li><a href="#" className="hover:text-primary">{t.footer.links[1]}</a></li>
-                    <li><a href="#" className="hover:text-primary">{t.footer.links[2]}</a></li>
+                    <li><a href="#home" onClick={(e) => {e.preventDefault(); window.scrollTo({top: 0, behavior: 'smooth'});}} className="hover:text-primary">{t.footer.links[0]}</a></li>
+                    <li><a href="#services" className="hover:text-primary">{t.footer.links[1]}</a></li>
                 </ul>
             </div>
 
             <div>
                 <h4 className="font-bold text-dark mb-4">{t.footer.contactTitle}</h4>
                 <ul className="space-y-2 text-sm text-gray-500">
-                    <li>info@medvision.com</li>
-                    <li>+20 123 456 7890</li>
+                    <li dir="ltr" className={lang === 'ar' ? 'text-right' : 'text-left'}>+20 109 4771 754</li>
                     <li>Cairo, Egypt</li>
                 </ul>
             </div>
         </div>
-        <div className="max-w-7xl mx-auto px-6 mt-12 pt-6 border-t border-gray-50 text-center text-xs text-gray-400">
+        <div className="max-w-7xl mx-auto px-6 mt-8 md:mt-12 pt-6 border-t border-gray-50 text-center text-xs text-gray-400">
             {t.footer.rights}
         </div>
       </footer>
@@ -327,8 +321,7 @@ const ServiceCard = ({ icon: Icon, title, desc, color, isFeatured, onClick, btnT
     const ArrowIcon = lang === 'ar' ? ArrowLeft : ArrowRight;
     return (
         <div 
-          onClick={onClick}
-          className={`p-8 rounded-[2rem] border transition-all duration-300 cursor-pointer group relative overflow-hidden
+          className={`p-8 rounded-[2rem] border transition-all duration-300 group relative overflow-hidden
           ${isFeatured 
             ? 'bg-white border-purple-100 shadow-xl shadow-purple-100 hover:-translate-y-2' 
             : 'bg-white border-gray-100 shadow-sm hover:shadow-lg hover:-translate-y-1'}`}
@@ -339,9 +332,9 @@ const ServiceCard = ({ icon: Icon, title, desc, color, isFeatured, onClick, btnT
           <h3 className="text-xl font-bold text-dark mb-3">{title}</h3>
           <p className="text-gray-500 text-sm leading-relaxed mb-4">{desc}</p>
           
-          <div className="flex items-center text-primary font-bold text-sm group-hover:gap-2 transition-all">
+          <button onClick={onClick} className="flex items-center text-primary font-bold text-sm group-hover:gap-2 transition-all cursor-pointer">
              {btnText} <ArrowIcon size={16} className={lang === 'ar' ? "mr-1" : "ml-1"} />
-          </div>
+          </button>
     
           {isFeatured && (
             <div className={`absolute top-0 bg-purple-100 text-purple-700 text-[10px] font-bold px-3 py-1 ${lang === 'ar' ? 'left-0 rounded-br-xl' : 'right-0 rounded-bl-xl'}`}>

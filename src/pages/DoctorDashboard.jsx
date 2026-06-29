@@ -32,6 +32,7 @@ export default function DoctorDashboard() {
   const [appointments, setAppointments] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(null);
+  const [actionError, setActionError] = useState(null);
 
   useEffect(() => {
     const fetchAppointments = async () => {
@@ -55,7 +56,8 @@ export default function DoctorDashboard() {
         apt.id === id ? { ...apt, status: newStatus } : apt
       ));
     } catch (err) {
-      console.log(t.error);
+      setActionError(t.error);
+      setTimeout(() => setActionError(null), 3000);
     } finally {
       setActionLoading(null);
     }
@@ -108,6 +110,12 @@ export default function DoctorDashboard() {
             <Activity size={20} className="text-primary" /> {t.table.title}
           </h3>
         </div>
+
+        {actionError && (
+          <div className="mx-6 mt-4 p-3 rounded-xl text-sm font-bold bg-red-50 text-red-700 border border-red-200 animate-in fade-in flex items-center gap-2">
+            <X size={16} /> {actionError}
+          </div>
+        )}
 
         <div className="overflow-x-auto">
           <table className={`w-full ${language === 'ar' ? 'text-right' : 'text-left'} border-collapse`}>

@@ -202,8 +202,12 @@ export default function Header({ user, onMenuClick }) {
           >
             {/* 7. Improved Avatar */}
             <div className="relative">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-secondary to-blue-100 flex items-center justify-center text-primary font-bold border-2 border-white shadow-sm ring-1 ring-gray-100 group-hover:scale-105 transition-transform duration-300">
-                {firstName[0]?.toUpperCase()}
+              <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-secondary to-blue-100 flex items-center justify-center text-primary font-bold border-2 border-white shadow-sm ring-1 ring-gray-100 group-hover:scale-105 transition-transform duration-300 overflow-hidden">
+                {user?.image ? (
+                   <img src={user.image} alt="Profile" className="w-full h-full object-cover" />
+                ) : (
+                   firstName[0]?.toUpperCase()
+                )}
               </div>
               <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 border-2 border-white rounded-full"></div>
             </div>
@@ -220,10 +224,7 @@ export default function Header({ user, onMenuClick }) {
             <div className={`absolute top-14 w-48 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden animate-in fade-in zoom-in-95 z-50 ${isRTL ? 'left-0 origin-top-left' : 'right-0 origin-top-right'}`}>
               <div className="p-1">
                 <button onClick={() => { navigate('/settings'); setShowUserMenu(false); }} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-gray-50 text-sm font-medium text-gray-600 hover:text-dark transition-colors">
-                  <User size={16} /> {t('settings')}
-                </button>
-                <button onClick={() => { navigate('/settings'); setShowUserMenu(false); }} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-gray-50 text-sm font-medium text-gray-600 hover:text-dark transition-colors">
-                  <Settings size={16} /> {t('header.preferences') || 'Preferences'}
+                  <Settings size={16} /> {t('settings')}
                 </button>
                 <div className="h-px bg-gray-50 my-1"></div>
                 <button onClick={handleLogout} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-red-50 text-sm font-medium text-red-500 transition-colors">

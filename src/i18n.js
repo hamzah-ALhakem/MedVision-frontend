@@ -15,6 +15,62 @@ const resources = {
       logout: "Logout",
       welcome: "Welcome",
       search: "Search...",
+      header: {
+        preferences: "Preferences",
+        notifications: "Notifications",
+        noNotifications: "No new notifications",
+        markAllRead: "Mark all as read",
+        new: "NEW"
+      },
+      messagesPage: {
+        title: 'Messages',
+        search: 'Search chats...',
+        noChats: 'No previous conversations',
+        typePlaceholder: 'Type your message...',
+        startChat: 'Select a conversation to start',
+        online: 'Online',
+        now: 'Now'
+      },
+      settingsPage: {
+        tabs: { general: 'Profile Settings', security: 'Security & Password', schedule: 'Work Schedule' },
+        role: { doctor: 'Doctor', patient: 'Patient', admin: 'Admin' },
+        labels: {
+          fullName: 'Full Name',
+          phone: 'Phone Number',
+          address: 'Address',
+          clinicAddress: 'Clinic Address',
+          specialty: 'Specialty',
+          email: 'Email Address',
+          currentPass: 'Current Password',
+          newPass: 'New Password',
+          confirmPass: 'Confirm Password',
+          languageSettings: 'Language Settings',
+          appLanguage: 'App Language'
+        },
+        schedule: {
+          hintTitle: 'Schedule Instructions:',
+          hintDesc: 'Click on the time to select specific hours.',
+          start: 'Start Time',
+          end: 'End Time'
+        },
+        buttons: {
+          saveProfile: 'Save Changes',
+          updatePass: 'Update Password',
+          saveSchedule: 'Save Schedule'
+        },
+        alerts: {
+          passMismatch: '❌ New passwords do not match',
+          profileSuccess: '✅ Profile saved successfully!',
+          profileError: '❌ Save failed, check connection.',
+          passSuccess: '✅ Password changed successfully',
+          passError: '❌ Password change failed',
+          scheduleSuccess: '✅ Clinic schedule updated successfully!',
+          scheduleError: '❌ Failed to update schedule'
+        },
+        placeholders: {
+          pass: '••••••••'
+        }
+      },
       screening: {
         label: "AI Screening",
         title: "AI Breast Cancer Screening",
@@ -117,10 +173,66 @@ const resources = {
       logout: "تسجيل خروج",
       welcome: "مرحباً",
       search: "بحث...",
+      header: {
+        preferences: "التفضيلات",
+        notifications: "الإشعارات",
+        noNotifications: "لا توجد إشعارات جديدة",
+        markAllRead: "تحديد الكل كمقروء",
+        new: "جديد"
+      },
+      messagesPage: {
+        title: 'الرسائل',
+        search: 'ابحث في المحادثات...',
+        noChats: 'لا توجد محادثات سابقة',
+        typePlaceholder: 'اكتب رسالتك هنا...',
+        startChat: 'اختر محادثة للبدء',
+        online: 'متصل الآن',
+        now: 'الآن'
+      },
+      settingsPage: {
+        tabs: { general: 'البيانات الشخصية', security: 'الأمان وكلمة المرور', schedule: 'مواعيد العمل' },
+        role: { doctor: 'طبيب', patient: 'مريض', admin: 'مسؤول' },
+        labels: {
+          fullName: 'الاسم الكامل',
+          phone: 'رقم الهاتف',
+          address: 'العنوان',
+          clinicAddress: 'عنوان العيادة',
+          specialty: 'التخصص',
+          email: 'البريد الإلكتروني',
+          currentPass: 'كلمة المرور الحالية',
+          newPass: 'كلمة المرور الجديدة',
+          confirmPass: 'تأكيد كلمة المرور',
+          languageSettings: 'إعدادات اللغة',
+          appLanguage: 'لغة التطبيق'
+        },
+        schedule: {
+          hintTitle: 'تعليمات الجدول:',
+          hintDesc: 'اضغط على الساعة لتحديد الوقت بدقة.',
+          start: 'بداية العمل',
+          end: 'نهاية العمل'
+        },
+        buttons: {
+          saveProfile: 'حفظ التغييرات',
+          updatePass: 'تحديث كلمة المرور',
+          saveSchedule: 'حفظ الجدول'
+        },
+        alerts: {
+          passMismatch: '❌ كلمة المرور الجديدة غير متطابقة',
+          profileSuccess: '✅ تم حفظ البيانات بنجاح!',
+          profileError: '❌ فشل الحفظ، تأكد من الاتصال.',
+          passSuccess: '✅ تم تغيير كلمة المرور بنجاح',
+          passError: '❌ فشل تغيير كلمة المرور',
+          scheduleSuccess: '✅ تم تحديث جدول العيادة بنجاح!',
+          scheduleError: '❌ فشل تحديث الجدول'
+        },
+        placeholders: {
+          pass: '••••••••'
+        }
+      },
       screening: {
         label: "الفحص الذكي",
-        title: "الفحص الذكي للأورام",
-        subtitle: "أداة مساعدة للتشخيص المبكر باستخدام خوارزميات التعلم العميق. قم بإدخال قياسات الخلايا (FNA) للحصول على تحليل فوري.",
+        title: "الفحص الذكي لسرطان الثدي",
+        subtitle: "أداة مساعدة للتشخيص المبكر. قم بإدخال قياسات الخلايا (FNA) للحصول على تحليل فوري.",
         clear: "مسح النموذج",
         demoData: "تجربة بيانات (ورم خبيث)",
         analyze: "تحليل البيانات",
@@ -132,8 +244,8 @@ const resources = {
         confidence: "مستوى الثقة (AI Confidence)",
         malignant: "Malignant (خبيث)",
         benign: "Benign (حميد)",
-        malignantDesc: "ورم خبيث (يتطلب تدخل فوري)",
-        benignDesc: "ورم حميد (آمن)",
+        malignantDesc: "سرطان ثدي خبيث (يتطلب تدخل فوري)",
+        benignDesc: "كتلة حميدة (آمنة)",
         nextSteps: "الإجراءات المقترحة:",
         stepConsult: "مراجعة استشاري أورام فوراً.",
         stepBiopsy: "إجراء فحوصات تأكيدية (Biopsy).",
