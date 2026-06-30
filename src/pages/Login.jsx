@@ -80,7 +80,11 @@ export default function Login() {
       const status = err.response?.status;
       const msg = err.response?.data?.message?.toLowerCase() || '';
       
-      if (status === 403) {
+      if (status === 429) {
+          // SECURITY (SEC-04): Account locked due to too many failed attempts.
+          // Show the backend message which includes the remaining minutes.
+          setError(err.response?.data?.message || t.errors.invalid);
+      } else if (status === 403) {
           if (msg.includes('review') || msg.includes('مراجعة')) {
               setError(t.errors.pending);
           } else if (msg.includes('rejected') || msg.includes('رفض')) {

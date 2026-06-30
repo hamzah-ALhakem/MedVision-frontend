@@ -16,8 +16,22 @@ export const AuthProvider = ({ children }) => {
             const storedToken = localStorage.getItem('token');
 
             if (storedUser && storedToken) {
-                setUser(JSON.parse(storedUser));
-                setToken(storedToken);
+                // SECURITY (SEC-02): Decode JWT payload and check expiry before
+                // restoring the session. Prevents expired tokens from keeping the
+                // user "logged in" on page refresh.
+                // JWT signature is verified server-side on every API call anyway.
+                const payloadBase64 = storedToken.split('.')[1];
+                const payload = JSON.parse(atob(payloadBase64));
+                const isExpired = payload.exp * 1000 < Date.now();
+
+                if (isExpired) {
+                    // Token expired — clear silently, ProtectedRoute redirects to /login
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('user');
+                } else {
+                    setUser(JSON.parse(storedUser));
+                    setToken(storedToken);
+                }
             }
         } catch (error) {
             console.error('Failed to parse user from local storage:', error);
