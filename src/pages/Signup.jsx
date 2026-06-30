@@ -35,8 +35,10 @@ const translations = {
       returnLogin: 'العودة لصفحة الدخول'
     },
     success: {
-      title: 'تم استلام طلبك بنجاح! 🎉',
-      desc: 'شكراً لانضمامك د. {name}. بياناتك ومواعيد العيادة قيد المراجعة. سيتم تفعيل حسابك قريباً.'
+      titleDoc: 'تم استلام طلبك بنجاح! 🎉',
+      descDoc: 'شكراً لانضمامك د. {name}. بياناتك ومواعيد العيادة قيد المراجعة. سيتم تفعيل حسابك قريباً.',
+      titlePat: 'تم إنشاء الحساب بنجاح! 🎉',
+      descPat: 'يرجى التحقق من بريدك الإلكتروني لتفعيل حسابك قبل تسجيل الدخول.'
     },
     footer: { text: 'لديك حساب بالفعل؟', link: 'تسجيل الدخول' },
     errors: {
@@ -44,7 +46,7 @@ const translations = {
       email: 'بريد إلكتروني غير صحيح',
       phoneReq: 'رقم الهاتف مطلوب',
       phoneInv: 'رقم غير صحيح (10 أرقام تبدأ بـ 10, 11, 12, 15)',
-      passLen: 'كلمة المرور يجب أن تكون 6 أحرف على الأقل',
+      passLen: 'كلمة المرور يجب أن تكون 8 أحرف على الأقل',
       passMatch: 'كلمات المرور غير متطابقة',
       specialty: 'التخصص مطلوب',
       license: 'رقم الترخيص مطلوب',
@@ -77,8 +79,10 @@ const translations = {
       returnLogin: 'Return to Login'
     },
     success: {
-      title: 'Request Received Successfully! 🎉',
-      desc: 'Thank you for joining Dr. {name}. Your data and schedule are under review. Your account will be activated soon.'
+      titleDoc: 'Request Received Successfully! 🎉',
+      descDoc: 'Thank you for joining Dr. {name}. Your data and schedule are under review. Your account will be activated soon.',
+      titlePat: 'Account Created Successfully! 🎉',
+      descPat: 'Please check your email inbox to verify your account before logging in.'
     },
     footer: { text: 'Already have an account?', link: 'Sign In' },
     errors: {
@@ -86,7 +90,7 @@ const translations = {
       email: 'Invalid email address',
       phoneReq: 'Phone number required',
       phoneInv: 'Invalid number (10 digits starting with 10, 11, 12, 15)',
-      passLen: 'Password must be at least 6 characters',
+      passLen: 'Password must be at least 8 characters',
       passMatch: 'Passwords do not match',
       specialty: 'Specialty required',
       license: 'License number required',
@@ -111,9 +115,10 @@ export default function Signup() {
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const [isSuccess, setIsSuccess] = useState(false);
+  const [successMsg, setSuccessMsg] = useState('');
 
   const [formData, setFormData] = useState({
-    role: '', fullName: '', email: '', phone: '', gender: 'Male',
+    role: '', fullName: '', email: '', phone: '', countryCode: '+20', gender: 'Male',
     password: '', confirmPassword: '', clinicAddress: '', licenseNumber: '', specialty: '',
   });
 
@@ -148,10 +153,16 @@ export default function Signup() {
     if (!formData.fullName.trim().includes(' ')) newErrors.fullName = t.errors.fullName;
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(formData.email)) newErrors.email = t.errors.email;
-    const egyptPhoneRegex = /^1[0-2,5]{1}[0-9]{8}$/;
-    if (!formData.phone) newErrors.phone = t.errors.phoneReq;
-    else if (!egyptPhoneRegex.test(formData.phone)) newErrors.phone = t.errors.phoneInv;
-    if (formData.password.length < 6) newErrors.password = t.errors.passLen;
+    
+    if (!formData.phone) {
+      newErrors.phone = t.errors.phoneReq;
+    } else if (formData.countryCode === '+20' && !/^1[0-2,5]{1}[0-9]{8}$/.test(formData.phone)) {
+      newErrors.phone = t.errors.phoneInv;
+    } else if (formData.countryCode !== '+20' && formData.phone.length < 7) {
+      newErrors.phone = language === 'ar' ? 'رقم هاتف غير صحيح' : 'Invalid phone number';
+    }
+
+    if (formData.password.length < 8) newErrors.password = t.errors.passLen;
     if (formData.password !== formData.confirmPassword) newErrors.confirmPassword = t.errors.passMatch;
 
     if (formData.role === 'doctor') {
@@ -189,14 +200,13 @@ export default function Signup() {
     try {
       const submissionData = {
         ...formData,
-        phone: `+20${formData.phone}`,
+        phone: `${formData.countryCode}${formData.phone}`,
         schedule: formData.role === 'doctor' ? schedule.filter(s => s.isActive) : []
       };
 
       await api.post('/auth/register', submissionData);
 
-      if (formData.role === 'doctor') setIsSuccess(true);
-      else navigate('/login');
+      setIsSuccess(true);
 
     } catch (err) {
       setErrors({ global: t.errors.global });
@@ -242,9 +252,11 @@ export default function Signup() {
               <div className="w-24 h-24 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-6">
                 <CheckCircle2 size={48} className="text-green-600" />
               </div>
-              <h2 className="text-2xl font-bold text-dark mb-3">{t.success.title}</h2>
+              <h2 className="text-2xl font-bold text-dark mb-3">
+                {formData.role === 'doctor' ? t.success.titleDoc : t.success.titlePat}
+              </h2>
               <p className="text-gray-500 mb-8 leading-relaxed">
-                {t.success.desc.replace('{name}', formData.fullName)}
+                {formData.role === 'doctor' ? t.success.descDoc.replace('{name}', formData.fullName) : t.success.descPat}
               </p>
               <Button onClick={() => navigate('/login')} className="w-full">
                 {t.buttons.returnLogin}
@@ -272,6 +284,12 @@ export default function Signup() {
                 </div>
               )}
 
+              {successMsg && (
+                <div className="p-4 bg-green-50 border border-green-200 rounded-xl flex items-center justify-center gap-3 text-green-700 text-sm font-bold animate-in fade-in shadow-sm">
+                  <CheckCircle2 size={20} /> {successMsg}
+                </div>
+              )}
+
               {step === 1 && (
                 <div className="grid md:grid-cols-2 gap-6 animate-in fade-in slide-in-from-bottom-4">
                   <RoleCard role="patient" icon={User} title={t.roles.patient} desc={t.roles.patientDesc} />
@@ -287,11 +305,24 @@ export default function Signup() {
                   <div className="space-y-1.5">
                     <label className="block text-sm font-bold text-gray-700 mx-1">{t.labels.phone}</label>
                     <div className="flex gap-2" dir="ltr">
-                      <div className="w-[80px] bg-gray-50 border-2 border-gray-100 rounded-xl flex items-center justify-center font-bold text-dark text-sm select-none">🇪🇬 +20</div>
-                      <input name="phone" type="tel" placeholder={t.labels.phonePH} value={formData.phone} onChange={handleChange} maxLength={10} className={`flex-1 bg-white border-2 rounded-xl py-3 px-4 outline-none transition-all font-medium text-dark placeholder:text-gray-300 ${errors.phone ? 'border-red-300 bg-red-50/10' : 'border-gray-100 focus:border-primary'}`} />
+                      <select 
+                        name="countryCode" 
+                        value={formData.countryCode} 
+                        onChange={handleChange} 
+                        className="w-[100px] bg-gray-50 border-2 border-gray-100 rounded-xl px-2 font-bold text-dark text-sm outline-none focus:border-primary cursor-pointer"
+                      >
+                        <option value="+20">🇪🇬 +20</option>
+                        <option value="+966">🇸🇦 +966</option>
+                        <option value="+971">🇦🇪 +971</option>
+                        <option value="+1">🇺🇸 +1</option>
+                        <option value="+44">🇬🇧 +44</option>
+                      </select>
+                      <input name="phone" type="tel" placeholder={formData.countryCode === '+20' ? t.labels.phonePH : 'xxx xxxx xxx'} value={formData.phone} onChange={handleChange} maxLength={15} className={`flex-1 bg-white border-2 rounded-xl py-3 px-4 outline-none transition-all font-medium text-dark placeholder:text-gray-300 ${errors.phone ? 'border-red-300 bg-red-50/10' : 'border-gray-100 focus:border-primary'}`} />
                     </div>
                     {errors.phone && <p className="text-xs font-bold text-red-500 mx-1 text-right">{errors.phone}</p>}
-                    <p className="text-[10px] text-gray-400 mx-1 text-right">{t.labels.phoneHint}</p>
+                    <p className="text-[10px] text-gray-400 mx-1 text-right">
+                      {formData.countryCode === '+20' ? t.labels.phoneHint : (language === 'ar' ? 'أدخل رقم هاتفك بدون رمز الدولة' : 'Enter your phone number without country code')}
+                    </p>
                   </div>
 
                   <div>

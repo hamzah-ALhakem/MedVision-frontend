@@ -25,6 +25,9 @@ export default function PatientDashboard() {
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [bookingReason, setBookingReason] = useState('');
   const [isBookingLoading, setIsBookingLoading] = useState(false);
+  const [bookingError, setBookingError] = useState('');
+  const [bookingAlert, setBookingAlert] = useState(null);
+  const [bookingAlertType, setBookingAlertType] = useState('success');
 
   // 1. Fetch data
   useEffect(() => {
@@ -63,9 +66,14 @@ export default function PatientDashboard() {
   // 3. Submit Booking
   const handleBookingSubmit = async (e) => {
     e.preventDefault();
-    if (!selectedSlot) return alert(t('patientDashboard.modal.alerts.selectSlot'));
+    if (!selectedSlot) {
+        setBookingError(t('patientDashboard.modal.alerts.selectSlot'));
+        return;
+    }
 
     setIsBookingLoading(true);
+    setBookingError('');
+    setBookingAlert(null);
     try {
       const calculatedDate = getNextDateForDay(selectedSlot.day_of_week);
       const shiftTime = selectedSlot.start_time;
@@ -81,12 +89,17 @@ export default function PatientDashboard() {
       const res = await api.get('/appointments');
       setMyAppointments(res.data);
 
-      setSelectedDoctor(null);
       setBookingReason('');
-      setSelectedSlot(null);
-      console.log(t('patientDashboard.modal.alerts.success'));
+      setBookingAlert(t('patientDashboard.modal.alerts.success'));
+      setBookingAlertType('success');
+      setTimeout(() => {
+        setSelectedDoctor(null);
+        setSelectedSlot(null);
+        setBookingAlert(null);
+      }, 2000);
     } catch (error) {
-      console.log(t('patientDashboard.modal.alerts.error'));
+      setBookingAlert(t('patientDashboard.modal.alerts.error'));
+      setBookingAlertType('error');
     } finally {
       setIsBookingLoading(false);
     }
@@ -155,8 +168,12 @@ export default function PatientDashboard() {
 
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex gap-4">
-                        <div className="w-16 h-16 rounded-2xl bg-gray-50 flex items-center justify-center text-xl font-bold text-primary border border-gray-100 shadow-inner">
-                            {getDocInitials(doc)}
+                        <div className="w-16 h-16 rounded-2xl bg-gray-50 flex items-center justify-center text-xl font-bold text-primary border border-gray-100 shadow-inner overflow-hidden">
+                            {doc.image ? (
+                                <img src={doc.image} alt="Doctor" className="w-full h-full object-cover" />
+                            ) : (
+                                getDocInitials(doc)
+                            )}
                         </div>
                         <div>
                             <h4 className="font-bold text-dark text-lg group-hover:text-primary transition-colors">{getDocName(doc)}</h4>
@@ -213,6 +230,8 @@ export default function PatientDashboard() {
                         onClick={() => {
                           setSelectedDoctor(doc);
                           setSelectedSlot(null);
+                          setBookingError('');
+                          setBookingAlert(null);
                         }}
                         className="w-full py-3.5 rounded-xl bg-primary text-white font-bold text-sm hover:bg-primary-hover shadow-lg shadow-primary/20 hover:shadow-xl transition-all flex items-center justify-center gap-2"
                       >
@@ -253,6 +272,12 @@ export default function PatientDashboard() {
 
             <form onSubmit={handleBookingSubmit} className="p-8 space-y-6">
               
+              {bookingAlert && (
+                <div className={`p-4 rounded-xl text-sm font-bold animate-in fade-in ${bookingAlertType === 'success' ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-red-50 text-red-700 border border-red-200'}`}>
+                  {bookingAlert}
+                </div>
+              )}
+
               {/* Slot Selection */}
               <div className="space-y-3">
                 <label className="text-sm font-bold text-dark block">{t('patientDashboard.modal.slotsLabel')}</label>
@@ -285,6 +310,7 @@ export default function PatientDashboard() {
                     </div>
                   )}
                 </div>
+                {bookingError && <p className="text-red-500 text-xs font-bold mt-1 animate-in slide-in-from-top-1">{bookingError}</p>}
               </div>
 
               {/* Reason */}

@@ -1,4 +1,5 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
+import i18n from '../i18n';
 
 const LanguageContext = createContext();
 
@@ -13,12 +14,16 @@ export const LanguageProvider = ({ children }) => {
     const newLang = language === 'ar' ? 'en' : 'ar';
     setLanguage(newLang);
     localStorage.setItem('lang', newLang);
+    i18n.changeLanguage(newLang);
   };
 
   // تغيير اتجاه الصفحة (dir) تلقائياً عند تغيير اللغة
   useEffect(() => {
     document.documentElement.dir = language === 'ar' ? 'rtl' : 'ltr';
     document.documentElement.lang = language;
+    if (i18n.language !== language) {
+        i18n.changeLanguage(language);
+    }
   }, [language]);
 
   return (

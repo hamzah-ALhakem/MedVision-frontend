@@ -1,35 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Search, Send, ArrowRight, ArrowLeft, Loader2, User } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import api from '../services/api';
 import { useLanguage } from '../context/LanguageContext';
 import { usePusher } from '../context/PusherContext';
 import { useAuth } from '../context/AuthContext';
 
-const translations = {
-  ar: {
-    title: 'الرسائل',
-    search: 'ابحث في المحادثات...',
-    noChats: 'لا توجد محادثات سابقة',
-    typePlaceholder: 'اكتب رسالتك هنا...',
-    startChat: 'اختر محادثة للبدء',
-    online: 'متصل الآن',
-    now: 'الآن'
-  },
-  en: {
-    title: 'Messages',
-    search: 'Search chats...',
-    noChats: 'No previous conversations',
-    typePlaceholder: 'Type your message...',
-    startChat: 'Select a conversation to start',
-    online: 'Online',
-    now: 'Now'
-  }
-};
-
 export default function Messages() {
   const { language } = useLanguage();
-  const t = translations[language];
+  const { t } = useTranslation();
   const location = useLocation();
   const { channel } = usePusher();
   
@@ -180,11 +160,11 @@ export default function Messages() {
       {/* Sidebar (Contacts) */}
       <div className={`w-full md:w-96 border-gray-100 flex flex-col bg-white ${activeChat ? 'hidden md:flex' : 'flex'} ${language === 'ar' ? 'md:border-l' : 'md:border-r'}`}>
         <div className="p-5 border-b border-gray-50">
-          <h2 className="text-xl font-bold text-dark mb-4">{t.title}</h2>
+          <h2 className="text-xl font-bold text-dark mb-4">{t('messagesPage.title')}</h2>
           <div className="relative">
             <input 
                 type="text" 
-                placeholder={t.search} 
+                placeholder={t('messagesPage.search')} 
                 className={`w-full py-3 bg-gray-50 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all border border-transparent focus:border-primary/30 ${language === 'ar' ? 'pl-4 pr-10' : 'pr-4 pl-10'}`}
             />
             <Search className={`absolute top-1/2 -translate-y-1/2 text-gray-400 ${language === 'ar' ? 'right-3' : 'left-3'}`} size={18} />
@@ -214,7 +194,7 @@ export default function Messages() {
                         <h4 className="font-bold text-dark text-sm truncate">
                             {contact.firstName} {contact.lastName}
                         </h4>
-                        <span className="text-[10px] text-gray-400">{t.now}</span>
+                        <span className="text-[10px] text-gray-400">{t('messagesPage.now')}</span>
                     </div>
                     <p className="text-xs text-gray-500 truncate">{contact.specialty || (contact.role === 'DOCTOR' ? 'Doctor' : 'Patient')}</p>
                 </div>
@@ -225,7 +205,7 @@ export default function Messages() {
                 <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-3">
                     <User size={24} className="opacity-50"/>
                 </div>
-                <p>{t.noChats}</p>
+                <p>{t('messagesPage.noChats')}</p>
             </div>
           )}
         </div>
@@ -251,7 +231,7 @@ export default function Messages() {
                     {activeChat.role === 'DOCTOR' ? (language === 'ar' ? 'د.' : 'Dr.') : ''} {activeChat.firstName} {activeChat.lastName}
                   </h3>
                   <p className="text-[10px] text-green-600 font-bold flex items-center gap-1">
-                    <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span> {t.online}
+                    <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span> {t('messagesPage.online')}
                   </p>
                 </div>
               </div>
@@ -291,7 +271,7 @@ export default function Messages() {
               <div className="flex items-center gap-3">
                 <input 
                   type="text" 
-                  placeholder={t.typePlaceholder}
+                  placeholder={t('messagesPage.typePlaceholder')}
                   className="flex-1 bg-gray-50 outline-none text-dark placeholder:text-gray-400 text-sm px-5 py-3.5 rounded-full focus:bg-white focus:ring-2 focus:ring-primary/20 border border-transparent transition-all"
                   value={inputText}
                   onChange={(e) => setInputText(e.target.value)}
@@ -314,7 +294,7 @@ export default function Messages() {
             <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center mb-4 shadow-sm">
                 <Send size={40} className="opacity-20 text-dark ml-2" />
             </div>
-            <p className="font-bold text-gray-400">{t.startChat}</p>
+            <p className="font-bold text-gray-400">{t('messagesPage.startChat')}</p>
           </div>
         )}
       </div>

@@ -77,11 +77,19 @@ export default function Login() {
       else navigate('/patient-dashboard');
 
     } catch (err) {
-      const msg = err.response?.data?.message;
-      if (msg === 'حسابك قيد المراجعة من قبل الإدارة. يرجى الانتظار.') {
-          setError(t.errors.pending);
-      } else if (msg === 'نأسف، تم رفض طلب انضمامك.') {
-          setError(t.errors.rejected);
+      const status = err.response?.status;
+      const msg = err.response?.data?.message?.toLowerCase() || '';
+      
+      if (status === 403) {
+          if (msg.includes('review') || msg.includes('مراجعة')) {
+              setError(t.errors.pending);
+          } else if (msg.includes('rejected') || msg.includes('رفض')) {
+              setError(t.errors.rejected);
+          } else if (msg.includes('verify') || msg.includes('inbox')) {
+              setError(language === 'ar' ? 'يرجى التحقق من بريدك الإلكتروني وتفعيله قبل تسجيل الدخول.' : 'Please check your inbox and verify your email before logging in.');
+          } else {
+              setError(t.errors.invalid);
+          }
       } else {
           setError(t.errors.invalid);
       }
@@ -145,7 +153,7 @@ export default function Login() {
                 required
               />
               <div className="flex justify-end">
-                <Link to="/forgot-password" className="text-xs font-bold text-primary hover:text-primary/80 transition-colors">
+                <Link to="/forgot-password" className="text-xs font-bold text-primary hover:underline">
                   {t.forgotPassword}
                 </Link>
               </div>

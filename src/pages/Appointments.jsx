@@ -39,6 +39,7 @@ export default function Appointments() {
   const [appointments, setAppointments] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(null); 
+  const [actionError, setActionError] = useState(null);
   
   const { user } = useAuth();
   const isPatient = user?.role === 'patient';
@@ -66,7 +67,8 @@ export default function Appointments() {
             apt.id === id ? { ...apt, status: newStatus } : apt
         ));
     } catch (err) {
-        console.log(t.error);
+        setActionError(t.error);
+        setTimeout(() => setActionError(null), 3000);
     } finally {
         setActionLoading(null);
     }
@@ -128,6 +130,12 @@ export default function Appointments() {
             {t.tabs.past}
         </button>
       </div>
+
+      {actionError && (
+        <div className="p-3 rounded-xl text-sm font-bold bg-red-50 text-red-700 border border-red-200 animate-in fade-in flex items-center gap-2 w-fit">
+          <X size={16} /> {actionError}
+        </div>
+      )}
 
       {/* List */}
       <div className="space-y-4">

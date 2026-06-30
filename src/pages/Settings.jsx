@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { User, Lock, Bell, Save, Mail, Phone, MapPin, Shield, Calendar, Globe, Languages } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { User, Lock, Bell, Save, Mail, Phone, MapPin, Shield, Calendar, Globe, Languages, Camera } from 'lucide-react';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
 import api from '../services/api';
@@ -104,12 +104,14 @@ export default function Settings() {
   const [userRole, setUserRole] = useState('');
   
   const [fullName, setFullName] = useState(''); 
+  const fileInputRef = useRef(null);
 
   const [profile, setProfile] = useState({
     email: '',
     phone: '',
     address: '',
-    specialty: '' 
+    specialty: '',
+    image: null
   });
 
   const [security, setSecurity] = useState({
@@ -142,7 +144,8 @@ export default function Settings() {
             email: data.email,
             phone: data.phone || '',
             address: data.clinicAddress || '', 
-            specialty: data.specialty || ''
+            specialty: data.specialty || '',
+            image: data.image || null
         });
 
         if (role === 'doctor') {
@@ -182,7 +185,8 @@ export default function Settings() {
             lastName,
             phone: profile.phone,
             address: profile.address,
-            specialty: profile.specialty
+            specialty: profile.specialty,
+            image: profile.image
         });
         console.log(t.alerts.profileSuccess);
     } catch (error) {
@@ -190,6 +194,18 @@ export default function Settings() {
     } finally {
         setIsLoading(false);
     }
+  };
+
+  // --- 2.5 Image Change ---
+  const handleImageChange = (e) => {
+      const file = e.target.files[0];
+      if (file) {
+          const reader = new FileReader();
+          reader.onloadend = () => {
+              setProfile({ ...profile, image: reader.result });
+          };
+          reader.readAsDataURL(file);
+      }
   };
 
   // --- 3. Save Password ---
@@ -266,10 +282,24 @@ export default function Settings() {
       <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-24 bg-gradient-to-r from-primary to-blue-600 opacity-10"></div>
         <div className="relative flex flex-col md:flex-row items-center md:items-end gap-6 pt-4">
-            <div className="relative group">
-                <div className="w-28 h-28 rounded-3xl bg-white border-4 border-white shadow-md flex items-center justify-center text-4xl font-bold text-primary uppercase overflow-hidden">
-                    {fullName ? fullName[0] : <User size={40}/>}
+            <div className="relative group cursor-pointer" onClick={() => fileInputRef.current?.click()}>
+                <div className="w-28 h-28 rounded-3xl bg-white border-4 border-white shadow-md flex items-center justify-center text-4xl font-bold text-primary uppercase overflow-hidden relative">
+                    {profile.image ? (
+                        <img src={profile.image} alt="Profile" className="w-full h-full object-cover" />
+                    ) : (
+                        fullName ? fullName[0] : <User size={40} />
+                    )}
+                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                        <Camera size={24} className="text-white" />
+                    </div>
                 </div>
+                <input 
+                    type="file" 
+                    ref={fileInputRef}
+                    accept="image/png, image/jpeg"
+                    className="hidden"
+                    onChange={handleImageChange}
+                />
             </div>
             <div className={`flex-1 text-center pb-2 ${language === 'ar' ? 'md:text-right' : 'md:text-left'}`}>
                 <h1 className="text-2xl font-bold text-dark">{fullName || '...'}</h1>
