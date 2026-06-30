@@ -64,10 +64,10 @@ describe('Login — Rendering', () => {
     expect(screen.getByRole('link', { name: /sign up for free/i })).toBeInTheDocument();
   });
 
-  it('LG-04 | FE-BUG-003: "Forgot Password?" link points to /forgot-password (non-existent route)', () => {
+  it('LG-04 | FE-BUG-003 FIXED: "Forgot Password?" link now points to working /forgot-password route', () => {
     renderLogin();
     const forgotLink = screen.getByRole('link', { name: /forgot password/i });
-    // This route does not exist in App.jsx — documents BUG-003
+    // BUG-003 FIXED: /forgot-password route now exists in App.jsx → ForgotPassword.jsx
     expect(forgotLink).toHaveAttribute('href', '/forgot-password');
   });
 
@@ -148,9 +148,8 @@ describe('Login — Error Handling', () => {
     await waitFor(() => expect(screen.getByText(/invalid email or password/i)).toBeInTheDocument());
   });
 
-  it('LG-10 | pending doctor (403) → FE-BUG-002: error detection broken for English backend messages', async () => {
-    // Backend returns English: 'Account is under review'
-    // But Login.jsx only matches Arabic strings → falls back to generic "Invalid credentials"
+  it('LG-10 | pending doctor (403) → FE-BUG-002 FIXED: correct pending message shown', async () => {
+    // BUG-002 FIXED: Login.jsx now uses HTTP status code + bilingual string matching
     api.post.mockRejectedValue({
       response: { status: 403, data: { message: 'Account is under review' } }
     });
@@ -160,16 +159,12 @@ describe('Login — Error Handling', () => {
     await userEvent.type(screen.getByPlaceholderText('••••••••'), 'pass123');
     await userEvent.click(screen.getByRole('button', { name: /sign in/i }));
 
-    await waitFor(() => {
-      // BUG-002: Arabic matching fails — shows wrong generic error instead of pending message
-      expect(screen.getByText(/invalid email or password/i)).toBeInTheDocument(); // ← BUG-002
-      // After fix: expect(screen.getByText(/under review|pending/i)).toBeInTheDocument()
-    });
+    // BUG-002 FIXED: now correctly shows the pending message (not generic invalid)
+    await waitFor(() => expect(screen.getByText(/under review|pending/i)).toBeInTheDocument());
   });
 
-  it('LG-11 | rejected doctor (403) → FE-BUG-002: error detection broken for English backend messages', async () => {
-    // Backend returns English: 'Account has been rejected'
-    // But Login.jsx only matches Arabic strings → shows wrong generic error
+  it('LG-11 | rejected doctor (403) → FE-BUG-002 FIXED: correct rejected message shown', async () => {
+    // BUG-002 FIXED: Login.jsx now uses HTTP status code + bilingual string matching
     api.post.mockRejectedValue({
       response: { status: 403, data: { message: 'Account has been rejected' } }
     });
@@ -179,11 +174,8 @@ describe('Login — Error Handling', () => {
     await userEvent.type(screen.getByPlaceholderText('••••••••'), 'pass123');
     await userEvent.click(screen.getByRole('button', { name: /sign in/i }));
 
-    await waitFor(() => {
-      // BUG-002: should show "rejected" message but shows generic invalid error
-      expect(screen.getByText(/invalid email or password/i)).toBeInTheDocument(); // ← BUG-002
-      // After fix: expect(screen.getByText(/rejected/i)).toBeInTheDocument()
-    });
+    // BUG-002 FIXED: now correctly shows rejected message
+    await waitFor(() => expect(screen.getByText(/rejected/i)).toBeInTheDocument());
   });
 
   it('LG-12 | error message is NOT shown before any submission', () => {

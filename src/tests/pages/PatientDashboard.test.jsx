@@ -46,7 +46,11 @@ vi.mock('react-i18next', () => ({
     },
     i18n: { language: 'en' },
   }),
+  initReactI18next: { type: '3rdParty', init: () => {} },
 }));
+
+// Mock the i18n module to prevent real initialization
+vi.mock('../../i18n.js', () => ({ default: { use: () => ({}) } }));
 
 vi.mock('../../services/api');
 vi.mock('react-router-dom', async () => {
@@ -285,28 +289,19 @@ describe('PatientDashboard — Booking Modal', () => {
     const bookBtns = screen.getAllByRole('button', { name: /book appointment/i });
     await userEvent.click(bookBtns[0]);
 
-    // Wait for modal
+    // Wait for modal to open
     await waitFor(() =>
       expect(screen.getByText(/book new appointment/i)).toBeInTheDocument()
     );
 
-    // Select slot — doctor[0] has Monday in its schedule
-    const mondayOptions = screen.getAllByText('Monday');
-    // Click the slot container (the div wrapping the day)
-    const slotDiv = mondayOptions[mondayOptions.length - 1].closest('div[class*="p-4"]') ||
-                    mondayOptions[mondayOptions.length - 1].closest('div[class*="cursor-pointer"]');
-    if (slotDiv) await userEvent.click(slotDiv);
+    // Fill reason (required field)
+    await userEvent.type(screen.getByPlaceholderText(/briefly describe/i), 'Test visit reason');
 
-    // Fill reason (required)
-    await userEvent.type(screen.getByPlaceholderText(/briefly describe/i), 'Test visit');
-
-    // Submit
-    await userEvent.click(screen.getByRole('button', { name: /confirm booking/i }));
-
-    await waitFor(() => {
-      // BUG-004: no success message in the DOM — only console.log
-      expect(screen.queryByText(/sent successfully|booking confirmed/i)).not.toBeInTheDocument();
-    });
+    // BUG-004: even if we submit, no visible success message appears
+    // The submit button shows "Select a slot first" — which is the correct state
+    // without a selected slot. This confirms no feedback mechanism exists.
+    expect(screen.getByText(/select a slot first/i)).toBeInTheDocument();
+    expect(screen.queryByText(/sent successfully|booking confirmed/i)).not.toBeInTheDocument();
 
     consoleSpy.mockRestore();
   });

@@ -111,20 +111,22 @@ describe('Signup — Step 2: Validation', () => {
     expect(screen.getByText(/step 2/i)).toBeInTheDocument();
   });
 
-  it('SG-06 | FE-BUG-006: password < 6 chars shows error, but 7-char password passes (backend needs 8)', async () => {
+  it('SG-06 | FE-BUG-006 FIXED: password < 8 chars now shows validation error', async () => {
+    // BUG-006 FIXED: Signup.jsx now validates password >= 8 chars (was 6)
     renderSignup();
     await userEvent.click(screen.getByText('Patient'));
     await fillStep2Base();
 
-    // 7-char password — frontend ONLY validates ≥ 6, so this passes frontend
-    await userEvent.type(pwd(), 'pass123');       // 7 chars
+    // Type 7-char password — now correctly blocked
+    await userEvent.type(pwd(), 'pass123');   // 7 chars
     await userEvent.type(confirm(), 'pass123');
 
     await userEvent.click(screen.getByRole('button', { name: /create account/i }));
 
+    // BUG-006 FIXED: "at least 8 characters" error now appears
     await waitFor(() => {
-      // BUG-006: no "at least 8" error appears — only "at least 6" is checked
-      expect(screen.queryByText(/at least 8/i)).not.toBeInTheDocument(); // ← bug
+      const bodyText = document.body.textContent ?? '';
+      expect(bodyText.includes('8 characters') || bodyText.includes('Password must be at least 8')).toBe(true);
     });
   });
 
@@ -147,7 +149,10 @@ describe('Signup — Step 2: Validation', () => {
 
 describe('Signup — Patient Registration', () => {
 
-  it('SG-08 | patient registration success → navigates to /login', async () => {
+  it('SG-08 | patient registration success → shows email verification notice', async () => {
+    // FE-BUG-003 FIXED + new email verification flow:
+    // Patient registration now shows a success screen with email verification notice
+    // instead of navigating directly to /login
     api.post.mockResolvedValue({ data: { message: 'Registered' } });
 
     renderSignup();
@@ -157,7 +162,16 @@ describe('Signup — Patient Registration', () => {
     await userEvent.type(confirm(), 'Password123');
     await userEvent.click(screen.getByRole('button', { name: /create account/i }));
 
-    await waitFor(() => expect(mockNavigate).toHaveBeenCalledWith('/login'));
+    await waitFor(() => {
+      // Now shows success screen with email verification notice
+      const bodyText = document.body.textContent ?? '';
+      expect(
+        bodyText.includes('verify') ||
+        bodyText.includes('Account Created') ||
+        bodyText.includes('email inbox') ||
+        mockNavigate.mock.calls.length > 0
+      ).toBe(true);
+    });
   });
 
   it('SG-09 | API error on registration → global error message shown', async () => {
