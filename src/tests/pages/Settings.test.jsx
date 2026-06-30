@@ -85,25 +85,18 @@ describe('Settings — Profile Tab', () => {
     expect(emailInput).toBeDisabled();
   });
 
-  it('ST-04 | FE-BUG-001: saving profile shows NO visible UI feedback (uses console.log)', async () => {
-    // This test DOCUMENTS the bug — after saving, no success message appears in the DOM
-    const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
+  it('ST-04 | FE-BUG-001 FIXED: saving profile now shows visible success feedback', async () => {
     api.put.mockResolvedValue({ data: {} });
 
-    renderSettings();
+    renderSettings({ role: 'patient' });
     await waitFor(() => screen.getByDisplayValue('Ahmed Ali'));
 
     await userEvent.click(screen.getByRole('button', { name: /save changes/i }));
 
+    // BUG-001 FIXED: success alert now appears in the DOM
     await waitFor(() => {
-      // console.log WAS called (the only "feedback" that exists)
-      expect(consoleSpy).toHaveBeenCalled();
-      // But NO success message appears in the DOM — this is the bug
-      expect(screen.queryByText(/saved successfully/i)).not.toBeInTheDocument(); // ← BUG-001
-      expect(screen.queryByText(/profile saved/i)).not.toBeInTheDocument();       // ← BUG-001
+      expect(screen.getByText(/profile saved successfully|saved successfully/i)).toBeInTheDocument();
     });
-
-    consoleSpy.mockRestore();
   });
 
 });
@@ -123,8 +116,10 @@ describe('Settings — Security Tab', () => {
     expect(screen.getByText(/confirm password/i)).toBeInTheDocument();
   });
 
-  it('ST-06 | mismatched passwords → alert() called', async () => {
-    const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {});
+  it('ST-06 | mismatched passwords → password change is blocked (alert still used)', async () => {
+    // The mismatch check still uses native alert() — which jsdom doesn't fully support
+    // Verify indirectly: API should NOT be called when passwords don't match
+    api.put.mockResolvedValue({ data: {} });
 
     renderSettings();
     await waitFor(() => screen.getByDisplayValue('Ahmed Ali'));
@@ -137,12 +132,12 @@ describe('Settings — Security Tab', () => {
 
     await userEvent.click(screen.getByRole('button', { name: /update password/i }));
 
-    await waitFor(() => expect(alertSpy).toHaveBeenCalled());
-    alertSpy.mockRestore();
+    // Mismatch blocks API call — PUT should not have been called
+    await new Promise(r => setTimeout(r, 300));
+    expect(api.put).not.toHaveBeenCalled();
   });
 
-  it('ST-07 | FE-BUG-001: password change success shows NO UI feedback', async () => {
-    const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
+  it('ST-07 | FE-BUG-001 FIXED: password change now shows visible success feedback', async () => {
     api.put.mockResolvedValue({ data: {} });
 
     renderSettings();
@@ -156,12 +151,10 @@ describe('Settings — Security Tab', () => {
 
     await userEvent.click(screen.getByRole('button', { name: /update password/i }));
 
+    // BUG-001 FIXED: success alert now appears in the DOM
     await waitFor(() => {
-      expect(consoleSpy).toHaveBeenCalled(); // only feedback is console.log
-      expect(screen.queryByText(/password changed/i)).not.toBeInTheDocument(); // ← BUG-001
+      expect(screen.getByText(/password changed successfully/i)).toBeInTheDocument();
     });
-
-    consoleSpy.mockRestore();
   });
 
 });
