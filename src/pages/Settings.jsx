@@ -100,6 +100,7 @@ export default function Settings() {
   const t = translations[language];
 
   const [activeTab, setActiveTab] = useState('general');
+  const [alert, setAlert] = useState({ type: '', message: '' });
   const [isLoading, setIsLoading] = useState(false);
   const [userRole, setUserRole] = useState('');
   
@@ -188,9 +189,9 @@ export default function Settings() {
             specialty: profile.specialty,
             image: profile.image
         });
-        console.log(t.alerts.profileSuccess);
+        setAlert({ type: 'success', message: t.alerts.profileSuccess });
     } catch (error) {
-        console.log(t.alerts.profileError);
+        setAlert({ type: 'error', message: t.alerts.profileError });
     } finally {
         setIsLoading(false);
     }
@@ -220,10 +221,10 @@ export default function Settings() {
               currentPassword: security.currentPassword,
               newPassword: security.newPassword
           });
-          console.log(t.alerts.passSuccess);
+          setAlert({ type: 'success', message: t.alerts.passSuccess });
           setSecurity({ currentPassword: '', newPassword: '', confirmPassword: '' });
       } catch (err) {
-          console.log(err.response?.data?.message || t.alerts.passError);
+          setAlert({ type: 'error', message: err.response?.data?.message || t.alerts.passError });
       } finally {
           setIsLoading(false);
       }
@@ -235,10 +236,10 @@ export default function Settings() {
       setIsLoading(true);
       try {
           await api.post('/schedule', { schedule });
-          console.log(t.alerts.scheduleSuccess);
+          setAlert({ type: 'success', message: t.alerts.scheduleSuccess });
       } catch (err) { 
           console.error(err);
-          console.log(t.alerts.scheduleError); 
+          setAlert({ type: 'error', message: t.alerts.scheduleError }); 
       }
       finally { setIsLoading(false); }
   };
@@ -265,7 +266,7 @@ export default function Settings() {
   const TabButton = ({ id, label, icon: Icon }) => (
     <button 
         type="button" 
-        onClick={() => setActiveTab(id)} 
+        onClick={() => { setActiveTab(id); setAlert({ type: '', message: '' }); }} 
         className={`flex items-center gap-2 px-5 py-3 rounded-xl text-sm font-bold transition-all w-full md:w-auto
         ${activeTab === id 
             ? 'bg-primary text-white shadow-lg shadow-primary/30' 
@@ -322,6 +323,15 @@ export default function Settings() {
       {/* Forms */}
       <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 min-h-[400px]">
         
+        {alert.message && (
+          <div className={`flex items-center gap-3 p-4 rounded-xl text-sm font-bold mb-4 animate-in zoom-in-95
+            ${alert.type === 'success'
+              ? 'bg-green-50 text-green-700 border border-green-100'
+              : 'bg-red-50 text-red-600 border border-red-100'}`}>
+            {alert.message}
+          </div>
+        )}
+
         {/* GENERAL TAB */}
         {activeTab === 'general' && (
           <div className="space-y-8 animate-in fade-in">
