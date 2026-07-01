@@ -18,7 +18,7 @@ export default function Header({ user, onMenuClick }) {
   const dropdownRef = useRef(null);
   const userMenuRef = useRef(null);
 
-  const firstName = user?.firstName || 'Guest';
+  const firstName = isRTL ? (user?.firstNameAr || 'Guest') : (user?.firstNameEn || 'Guest');
 
   // دالة الصوت
   const playSound = () => {

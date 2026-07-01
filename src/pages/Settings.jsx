@@ -3,12 +3,12 @@ import { User, Lock, Bell, Save, Mail, Phone, MapPin, Shield, Calendar, Globe, L
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
 import api from '../services/api';
-import { useLanguage } from '../context/LanguageContext'; // 1. استيراد السياق
+import { useTranslation } from 'react-i18next';
 
 // 2. قاموس الترجمة (تم التحديث)
 const translations = {
   ar: {
-    tabs: { general: 'البيانات الشخصية', security: 'الأمان وكلمة المرور', schedule: 'مواعيد العمل' },
+    tabs: { general: 'البيانات الشخصية', schedule: 'مواعيد العمل' },
     role: { doctor: 'طبيب', patient: 'مريض', admin: 'مسؤول' },
     labels: {
       fullName: 'الاسم الكامل',
@@ -48,7 +48,7 @@ const translations = {
     }
   },
   en: {
-    tabs: { general: 'Profile Settings', security: 'Security & Password', schedule: 'Work Schedule' },
+    tabs: { general: 'Profile Settings', schedule: 'Work Schedule' },
     role: { doctor: 'Doctor', patient: 'Patient', admin: 'Admin' },
     labels: {
       fullName: 'Full Name',
@@ -96,30 +96,30 @@ const daysMap = {
 
 export default function Settings() {
   // 3. استخراج دالة التبديل من السياق
-  const { language, toggleLanguage } = useLanguage();
-  const t = translations[language];
+  const { t: i18nT, i18n } = useTranslation();
+  const language = i18n.language || 'ar';
+  const isRTL = language === 'ar';
+  const t = translations[language] || translations.ar;
 
   const [activeTab, setActiveTab] = useState('general');
   const [alert, setAlert] = useState({ type: '', message: '' });
   const [isLoading, setIsLoading] = useState(false);
   const [userRole, setUserRole] = useState('');
   
-  const [fullName, setFullName] = useState(''); 
+  const [fullNameEn, setFullNameEn] = useState(''); 
+  const [fullNameAr, setFullNameAr] = useState(''); 
   const fileInputRef = useRef(null);
 
   const [profile, setProfile] = useState({
     email: '',
     phone: '',
     address: '',
-    specialty: '',
+    specialtyEn: '',
+    specialtyAr: '',
     image: null
   });
 
-  const [security, setSecurity] = useState({
-    currentPassword: '',
-    newPassword: '',
-    confirmPassword: '',
-  });
+
 
   const daysOfWeek = ['Saturday', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
   
@@ -134,9 +134,13 @@ export default function Settings() {
         const res = await api.get('/users/profile');
         const data = res.data;
 
-        const fName = data.firstName || '';
-        const lName = data.lastName || '';
-        setFullName(`${fName} ${lName}`.trim());
+        const fNameEn = data.firstNameEn || '';
+        const lNameEn = data.lastNameEn || '';
+        setFullNameEn(`${fNameEn} ${lNameEn}`.trim());
+
+        const fNameAr = data.firstNameAr || '';
+        const lNameAr = data.lastNameAr || '';
+        setFullNameAr(`${fNameAr} ${lNameAr}`.trim());
         
         const role = data.role ? data.role.toLowerCase() : 'patient';
         setUserRole(role);
@@ -145,7 +149,8 @@ export default function Settings() {
             email: data.email,
             phone: data.phone || '',
             address: data.clinicAddress || '', 
-            specialty: data.specialty || '',
+            specialtyEn: data.specialtyEn || '',
+            specialtyAr: data.specialtyAr || '',
             image: data.image || null
         });
 
@@ -177,16 +182,23 @@ export default function Settings() {
     e.preventDefault();
     setIsLoading(true);
     try {
-        const nameParts = fullName.trim().split(' ');
-        const firstName = nameParts[0];
-        const lastName = nameParts.slice(1).join(' ') || '';
+        const namePartsEn = fullNameEn.trim().split(' ');
+        const firstNameEn = namePartsEn[0];
+        const lastNameEn = namePartsEn.slice(1).join(' ') || '';
+
+        const namePartsAr = fullNameAr.trim().split(' ');
+        const firstNameAr = namePartsAr[0];
+        const lastNameAr = namePartsAr.slice(1).join(' ') || '';
 
         await api.put('/users/profile', {
-            firstName,
-            lastName,
+            firstNameEn,
+            firstNameAr,
+            lastNameEn,
+            lastNameAr,
             phone: profile.phone,
             address: profile.address,
-            specialty: profile.specialty,
+            specialtyEn: profile.specialtyEn,
+            specialtyAr: profile.specialtyAr,
             image: profile.image
         });
         setAlert({ type: 'success', message: t.alerts.profileSuccess });
@@ -209,26 +221,7 @@ export default function Settings() {
       }
   };
 
-  // --- 3. Save Password ---
-  const handleSavePassword = async (e) => {
-      e.preventDefault();
-      if (security.newPassword !== security.confirmPassword) {
-          return alert(t.alerts.passMismatch);
-      }
-      setIsLoading(true);
-      try {
-          await api.put('/users/change-password', {
-              currentPassword: security.currentPassword,
-              newPassword: security.newPassword
-          });
-          setAlert({ type: 'success', message: t.alerts.passSuccess });
-          setSecurity({ currentPassword: '', newPassword: '', confirmPassword: '' });
-      } catch (err) {
-          setAlert({ type: 'error', message: err.response?.data?.message || t.alerts.passError });
-      } finally {
-          setIsLoading(false);
-      }
-  };
+
 
   // --- 4. Save Schedule ---
   const handleSaveSchedule = async (e) => {
@@ -259,7 +252,10 @@ export default function Settings() {
   // دالة مساعدة لتغيير اللغة فقط إذا لزم الأمر
   const handleLanguageSwitch = (targetLang) => {
       if (language !== targetLang) {
-          toggleLanguage();
+          i18n.changeLanguage(targetLang);
+          localStorage.setItem('lang', targetLang);
+          document.documentElement.dir = targetLang === 'ar' ? 'rtl' : 'ltr';
+          document.documentElement.lang = targetLang;
       }
   };
 
@@ -277,7 +273,7 @@ export default function Settings() {
   );
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-10">
+    <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-10" dir={isRTL ? "rtl" : "ltr"}>
       
       {/* Header */}
       <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 relative overflow-hidden">
@@ -288,7 +284,7 @@ export default function Settings() {
                     {profile.image ? (
                         <img src={profile.image} alt="Profile" className="w-full h-full object-cover" />
                     ) : (
-                        fullName ? fullName[0] : <User size={40} />
+                        (isRTL ? fullNameAr : fullNameEn) ? (isRTL ? fullNameAr : fullNameEn)[0]?.toUpperCase() : <User size={40} />
                     )}
                     <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                         <Camera size={24} className="text-white" />
@@ -302,19 +298,17 @@ export default function Settings() {
                     onChange={handleImageChange}
                 />
             </div>
-            <div className={`flex-1 text-center pb-2 ${language === 'ar' ? 'md:text-right' : 'md:text-left'}`}>
-                <h1 className="text-2xl font-bold text-dark">{fullName || '...'}</h1>
+            <div className={`flex-1 text-center pb-2 ${isRTL ? 'md:text-right' : 'md:text-left'}`}>
+                <h1 className="text-2xl font-bold text-dark">{isRTL ? fullNameAr : fullNameEn || '...'}</h1>
                 <p className="text-gray-500 font-medium capitalize mt-1 flex items-center justify-center md:justify-start gap-1">
                     {userRole === 'doctor' 
                         ? <span className="bg-blue-50 text-blue-600 px-2 py-0.5 rounded text-xs font-bold">{t.role.doctor}</span> 
                         : <span className="bg-green-50 text-green-600 px-2 py-0.5 rounded text-xs font-bold">{t.role.patient}</span>
                     }
-                    • {profile.email}
                 </p>
             </div>
             <div className="flex gap-2 w-full md:w-auto overflow-x-auto pb-2 md:pb-0">
                 <TabButton id="general" label={t.tabs.general} icon={User} />
-                <TabButton id="security" label={t.tabs.security} icon={Shield} />
                 {userRole === 'doctor' && <TabButton id="schedule" label={t.tabs.schedule} icon={Calendar} />}
             </div>
         </div>
@@ -337,13 +331,12 @@ export default function Settings() {
           <div className="space-y-8 animate-in fade-in">
             <form onSubmit={handleSaveProfile} className="space-y-6">
                 <div className="grid md:grid-cols-2 gap-6">
-                <Input label={t.labels.fullName} value={fullName} onChange={(e) => setFullName(e.target.value)} icon={User} />
+                <Input label={t.labels.fullName} value={isRTL ? fullNameAr : fullNameEn} onChange={(e) => isRTL ? setFullNameAr(e.target.value) : setFullNameEn(e.target.value)} icon={User} />
                 <Input label={t.labels.phone} value={profile.phone} onChange={(e) => setProfile({...profile, phone: e.target.value})} icon={Phone} />
                 </div>
                 <Input label={userRole === 'doctor' ? t.labels.clinicAddress : t.labels.address} value={profile.address} onChange={(e) => setProfile({...profile, address: e.target.value})} icon={MapPin} />
-                {userRole === 'doctor' && (<Input label={t.labels.specialty} value={profile.specialty} onChange={(e) => setProfile({...profile, specialty: e.target.value})} icon={Shield} />)}
-                <Input label={t.labels.email} value={profile.email} disabled icon={Mail} className="opacity-70 bg-gray-50" />
-                <div className="flex justify-end pt-4"><Button type="submit" isLoading={isLoading} className="w-full md:w-auto px-8"><Save size={18} className={language === 'ar' ? 'ml-2' : 'mr-2'} /> {t.buttons.saveProfile}</Button></div>
+                {userRole === 'doctor' && (<Input label={t.labels.specialty} value={isRTL ? profile.specialtyAr : profile.specialtyEn} onChange={(e) => isRTL ? setProfile({...profile, specialtyAr: e.target.value}) : setProfile({...profile, specialtyEn: e.target.value})} icon={Shield} />)}
+                <div className="flex justify-end pt-4"><Button type="submit" isLoading={isLoading} className="w-full md:w-auto px-8"><Save size={18} className={isRTL ? 'ml-2' : 'mr-2'} /> {t.buttons.saveProfile}</Button></div>
             </form>
 
             {/* 🔥 قسم إعدادات اللغة الجديد */}
@@ -384,17 +377,7 @@ export default function Settings() {
           </div>
         )}
 
-        {/* SECURITY TAB */}
-        {activeTab === 'security' && (
-          <form onSubmit={handleSavePassword} className="space-y-6 animate-in fade-in">
-             <div className="space-y-4 max-w-lg">
-              <Input label={t.labels.currentPass} type="password" placeholder={t.placeholders.pass} value={security.currentPassword} onChange={(e) => setSecurity({...security, currentPassword: e.target.value})} icon={Lock} required />
-              <Input label={t.labels.newPass} type="password" placeholder={t.placeholders.pass} value={security.newPassword} onChange={(e) => setSecurity({...security, newPassword: e.target.value})} icon={Lock} required />
-              <Input label={t.labels.confirmPass} type="password" placeholder={t.placeholders.pass} value={security.confirmPassword} onChange={(e) => setSecurity({...security, confirmPassword: e.target.value})} icon={Lock} required />
-            </div>
-            <div className="flex justify-end pt-4"><Button type="submit" isLoading={isLoading} className="w-full md:w-auto px-8">{t.buttons.updatePass}</Button></div>
-          </form>
-        )}
+
 
         {/* SCHEDULE TAB */}
         {activeTab === 'schedule' && userRole === 'doctor' && (

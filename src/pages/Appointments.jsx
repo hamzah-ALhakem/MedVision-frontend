@@ -165,13 +165,13 @@ export default function Appointments() {
                     <div>
                         <h3 className="text-lg font-bold text-dark flex items-center gap-2">
                            {isPatient 
-                                ? (language === 'ar' ? `د. ${apt.first_name} ${apt.last_name}` : `Dr. ${apt.first_name} ${apt.last_name}`)
-                                : `${apt.first_name} ${apt.last_name}`
+                                ? (language === 'ar' ? `د. ${apt.first_name_ar} ${apt.last_name_ar}` : `Dr. ${apt.first_name_en} ${apt.last_name_en}`)
+                                : (language === 'ar' ? `${apt.first_name_ar} ${apt.last_name_ar}` : `${apt.first_name_en} ${apt.last_name_en}`)
                            }
                         </h3>
                         <p className="text-sm text-gray-400 font-medium flex items-center gap-1.5 mt-1">
                             <User size={14}/>
-                            {isPatient ? apt.specialty : (apt.gender === 'Male' ? (language === 'ar' ? 'ذكر' : 'Male') : (language === 'ar' ? 'أنثى' : 'Female'))}
+                            {isPatient ? (language === 'ar' ? apt.specialty_ar : apt.specialty_en) : (apt.gender === 'Male' ? (language === 'ar' ? 'ذكر' : 'Male') : (language === 'ar' ? 'أنثى' : 'Female'))}
                         </p>
                     </div>
                     <StatusBadge status={apt.status} />

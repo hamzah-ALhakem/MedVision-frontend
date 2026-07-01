@@ -22,7 +22,7 @@ export default function Labs() {
   const [showAdminModal, setShowAdminModal] = useState(false);
   const [editingLab, setEditingLab] = useState(null);
   const [formData, setFormData] = useState({
-    name: '', address: '', phone: '', rating: 0, image: '', services: []
+    nameEn: '', nameAr: '', address: '', phone: '', image: '', services: []
   });
 
   const fetchLabs = async () => {
@@ -72,14 +72,14 @@ export default function Labs() {
     if (lab) {
       setEditingLab(lab);
       setFormData({
-        name: lab.name, address: lab.address, phone: lab.phone || '',
-        rating: lab.rating, image: lab.image || '',
+        nameEn: lab.nameEn || '', nameAr: lab.nameAr || '', address: lab.address || '', phone: lab.phone || '',
+        image: lab.image || '',
         services: lab.services || []
       });
     } else {
       setEditingLab(null);
       setFormData({
-        name: '', address: '', phone: '', rating: 0, image: '', services: []
+        nameEn: '', nameAr: '', address: '', phone: '', image: '', services: []
       });
     }
     setShowAdminModal(true);
@@ -97,7 +97,7 @@ export default function Labs() {
   };
 
   const addServiceRow = () => {
-    setFormData({ ...formData, services: [...formData.services, { name: '', price: 0 }] });
+    setFormData({ ...formData, services: [...formData.services, { nameEn: '', nameAr: '', price: 0 }] });
   };
 
   const removeServiceRow = (index) => {
@@ -107,8 +107,9 @@ export default function Labs() {
   };
 
   const filteredLabs = labs.filter(lab => 
-    lab.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    lab.address.toLowerCase().includes(searchTerm.toLowerCase())
+    (lab.nameEn?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+    (lab.nameAr?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+    (lab.address?.toLowerCase() || '').includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -167,14 +168,11 @@ export default function Labs() {
               <div className="relative h-56 w-full shrink-0 bg-gray-100 overflow-hidden">
                 <img 
                   src={lab.image || 'https://images.unsplash.com/photo-1582719471384-bc4d33919de9?auto=format&fit=crop&q=80&w=600'} 
-                  alt={lab.name} 
+                  alt={isRTL ? lab.nameAr : lab.nameEn} 
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
                 />
                 
-                {/* Rating Badge */}
-                <div className={`absolute top-4 ${isRTL ? 'right-4' : 'left-4'} bg-white/95 backdrop-blur-md px-3 py-1.5 rounded-xl text-sm font-bold text-dark flex items-center gap-1.5 shadow-sm`}>
-                  <span className="text-yellow-400 text-lg leading-none">★</span> {lab.rating}
-                </div>
+
 
                 {/* Admin Actions */}
                 {isAdmin && (
@@ -191,7 +189,7 @@ export default function Labs() {
 
               {/* Content Section */}
               <div className="p-6 md:p-8 flex-1 flex flex-col">
-                <h3 className="text-2xl font-bold text-dark group-hover:text-primary transition-colors mb-3 line-clamp-1">{lab.name}</h3>
+                <h3 className="text-2xl font-bold text-dark group-hover:text-primary transition-colors mb-3 line-clamp-1">{isRTL ? lab.nameAr : lab.nameEn}</h3>
                 
                 <div className="flex items-start gap-2.5 text-gray-500 text-sm mb-6">
                   <MapPin size={18} className="shrink-0 mt-0.5 text-gray-400" /> 
@@ -212,7 +210,7 @@ export default function Labs() {
                     <div className="bg-gray-50 rounded-2xl p-4 text-sm space-y-3 animate-in slide-in-from-top-2 border border-gray-100">
                       {lab.services?.length > 0 ? lab.services.map((svc, i) => (
                         <div key={i} className="flex justify-between items-center border-b border-gray-200 last:border-0 pb-2 last:pb-0">
-                          <span className="text-gray-600 font-medium">{svc.name}</span>
+                          <span className="text-gray-600 font-medium">{isRTL ? svc.nameAr : svc.nameEn}</span>
                           <span className="font-bold text-primary bg-white px-2 py-1 rounded-lg shadow-sm border border-gray-100">{svc.price} {t('labsPage.currency')}</span>
                         </div>
                       )) : <div className="text-sm font-medium text-gray-400 text-center py-2">No services listed.</div>}
@@ -241,7 +239,7 @@ export default function Labs() {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-dark/60 backdrop-blur-sm animate-in fade-in">
           <div className="bg-white rounded-3xl w-full max-w-md overflow-hidden shadow-2xl animate-in zoom-in-95">
             <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
-              <h3 className="font-bold text-dark">{t('labsPage.bookTitle').replace('{{name}}', selectedLab.name)}</h3>
+              <h3 className="font-bold text-dark">{t('labsPage.bookTitle').replace('{{name}}', isRTL ? selectedLab.nameAr : selectedLab.nameEn)}</h3>
               <button onClick={() => setSelectedLab(null)} className="text-gray-400 hover:text-red-500"><X size={20}/></button>
             </div>
             <form onSubmit={(e) => { e.preventDefault(); alert('Booking successful (Mock)'); setSelectedLab(null); }} className="p-6 space-y-4">
@@ -265,14 +263,14 @@ export default function Labs() {
             </div>
             <form onSubmit={handleAdminSubmit} className="p-6 space-y-5">
               <div className="grid md:grid-cols-2 gap-4">
-                <Input label={t('labsPage.labName')} value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} required />
-                <Input label={t('labsPage.labPhone')} value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} />
+                <Input label={t('labsPage.labName') + ' (EN)'} value={formData.nameEn} onChange={(e) => setFormData({...formData, nameEn: e.target.value})} required />
+                <Input label={t('labsPage.labName') + ' (AR)'} value={formData.nameAr} onChange={(e) => setFormData({...formData, nameAr: e.target.value})} required />
               </div>
-              <Input label={t('labsPage.labAddress')} value={formData.address} onChange={(e) => setFormData({...formData, address: e.target.value})} required />
               <div className="grid md:grid-cols-2 gap-4">
-                <Input label={t('labsPage.labRating')} type="number" step="0.1" max="5" value={formData.rating} onChange={(e) => setFormData({...formData, rating: e.target.value})} />
-                <Input label={t('labsPage.labImage')} value={formData.image} onChange={(e) => setFormData({...formData, image: e.target.value})} placeholder="https://..." />
+                <Input label={t('labsPage.labPhone')} value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} />
+                <Input label={t('labsPage.labAddress')} value={formData.address} onChange={(e) => setFormData({...formData, address: e.target.value})} required />
               </div>
+              <Input label={t('labsPage.labImage')} value={formData.image} onChange={(e) => setFormData({...formData, image: e.target.value})} placeholder="https://..." />
               
               <div className="border border-gray-200 rounded-xl p-4 bg-gray-50/50">
                 <div className="flex justify-between items-center mb-4">
@@ -284,7 +282,8 @@ export default function Labs() {
                 <div className="space-y-3">
                   {formData.services.map((svc, i) => (
                     <div key={i} className="flex gap-3 items-center">
-                      <input type="text" placeholder={t('labsPage.serviceName')} value={svc.name} onChange={e => updateService(i, 'name', e.target.value)} required className="flex-1 bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-primary" />
+                      <input type="text" placeholder={t('labsPage.serviceName') + ' (EN)'} value={svc.nameEn} onChange={e => updateService(i, 'nameEn', e.target.value)} required className="flex-1 bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-primary" />
+                      <input type="text" placeholder={t('labsPage.serviceName') + ' (AR)'} value={svc.nameAr} onChange={e => updateService(i, 'nameAr', e.target.value)} required className="flex-1 bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-primary" />
                       <input type="number" placeholder={t('labsPage.servicePrice')} value={svc.price} onChange={e => updateService(i, 'price', e.target.value)} required className="w-24 bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-primary" />
                       <button type="button" onClick={() => removeServiceRow(i)} className="text-red-400 hover:text-red-600"><Trash2 size={18}/></button>
                     </div>

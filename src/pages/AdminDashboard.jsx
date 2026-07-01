@@ -128,15 +128,18 @@ export default function AdminDashboard() {
                             <div className="flex items-center gap-3">
                                 <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-xs 
                                     ${type === 'pending' ? 'bg-orange-50 text-orange-600' : 'bg-blue-50 text-blue-600'}`}>
-                                    {getInitials(doc.firstName, doc.lastName)}
+                                    {getInitials(
+                                        language === 'ar' ? doc.firstNameAr : doc.firstNameEn,
+                                        language === 'ar' ? doc.lastNameAr : doc.lastNameEn
+                                    )}
                                 </div>
                                 <div>
-                                    <span className="font-bold text-dark block">{doc.firstName} {doc.lastName}</span>
+                                    <span className="font-bold text-dark block">{language === 'ar' ? `${doc.firstNameAr} ${doc.lastNameAr}` : `${doc.firstNameEn} ${doc.lastNameEn}`}</span>
                                     <span className="text-xs text-gray-400" dir="ltr">{doc.phone}</span>
                                 </div>
                             </div>
                         </td>
-                        <td className="py-4 text-gray-600">{doc.specialty}</td>
+                        <td className="py-4 text-gray-600">{language === 'ar' ? doc.specialtyAr : doc.specialtyEn}</td>
                         <td className="py-4 font-mono text-gray-500 bg-gray-50 w-fit px-2 rounded">{doc.licenseNumber}</td>
                         <td className="py-4 text-gray-400">{new Date(doc.createdAt).toLocaleDateString(language === 'ar' ? 'ar-EG' : 'en-US')}</td>
                         <td className="py-4">

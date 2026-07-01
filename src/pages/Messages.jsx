@@ -186,17 +186,20 @@ export default function Messages() {
                 >
                 <div className="relative">
                     <div className="w-12 h-12 rounded-full flex items-center justify-center text-primary font-bold text-sm bg-blue-100 border-2 border-white shadow-sm">
-                        {getInitials(contact.firstName, contact.lastName)}
+                        {getInitials(
+                            language === 'ar' ? contact.firstNameAr : contact.firstNameEn,
+                            language === 'ar' ? contact.lastNameAr : contact.lastNameEn
+                        )}
                     </div>
                 </div>
                 <div className="flex-1 min-w-0">
                     <div className="flex justify-between items-baseline mb-1">
                         <h4 className="font-bold text-dark text-sm truncate">
-                            {contact.firstName} {contact.lastName}
+                            {language === 'ar' ? `${contact.firstNameAr} ${contact.lastNameAr}` : `${contact.firstNameEn} ${contact.lastNameEn}`}
                         </h4>
                         <span className="text-[10px] text-gray-400">{t('messagesPage.now')}</span>
                     </div>
-                    <p className="text-xs text-gray-500 truncate">{contact.specialty || (contact.role === 'DOCTOR' ? 'Doctor' : 'Patient')}</p>
+                    <p className="text-xs text-gray-500 truncate">{language === 'ar' ? contact.specialtyAr : contact.specialtyEn || (contact.role === 'DOCTOR' ? 'Doctor' : 'Patient')}</p>
                 </div>
                 </div>
             ))
@@ -224,11 +227,14 @@ export default function Messages() {
                     <ArrowIcon size={20} />
                 </button>
                 <div className="w-10 h-10 rounded-full flex items-center justify-center text-primary font-bold text-xs bg-blue-100">
-                    {getInitials(activeChat.firstName, activeChat.lastName)}
+                    {getInitials(
+                        language === 'ar' ? activeChat.firstNameAr : activeChat.firstNameEn,
+                        language === 'ar' ? activeChat.lastNameAr : activeChat.lastNameEn
+                    )}
                 </div>
                 <div>
                   <h3 className="font-bold text-dark text-sm">
-                    {activeChat.role === 'DOCTOR' ? (language === 'ar' ? 'د.' : 'Dr.') : ''} {activeChat.firstName} {activeChat.lastName}
+                    {activeChat.role === 'DOCTOR' ? (language === 'ar' ? 'د.' : 'Dr.') : ''} {language === 'ar' ? `${activeChat.firstNameAr} ${activeChat.lastNameAr}` : `${activeChat.firstNameEn} ${activeChat.lastNameEn}`}
                   </h3>
                   <p className="text-[10px] text-green-600 font-bold flex items-center gap-1">
                     <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span> {t('messagesPage.online')}

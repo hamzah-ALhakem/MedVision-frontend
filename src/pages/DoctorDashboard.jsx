@@ -137,10 +137,10 @@ export default function DoctorDashboard() {
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-full bg-secondary text-primary font-bold flex items-center justify-center text-sm">
-                          {apt.first_name?.[0]}
+                          {(language === 'ar' ? apt.first_name_ar : apt.first_name_en)?.[0] || '?'}
                         </div>
                         <div>
-                          <p className="font-bold text-dark text-sm">{apt.first_name} {apt.last_name}</p>
+                          <p className="font-bold text-dark text-sm">{language === 'ar' ? `${apt.first_name_ar} ${apt.last_name_ar}` : `${apt.first_name_en} ${apt.last_name_en}`}</p>
                           <p className="text-xs text-gray-400 font-medium font-sans" dir="ltr">{apt.phone}</p>
                         </div>
                       </div>

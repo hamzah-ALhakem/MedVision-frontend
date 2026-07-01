@@ -111,16 +111,20 @@ export default function PatientDashboard() {
       state: {
         startChatWith: {
           id: doctor.id,
-          name: `Dr. ${doctor.firstName} ${doctor.lastName}`,
-          specialty: doctor.specialty
+          name: language === 'ar' ? `د. ${doctor.firstNameAr} ${doctor.lastNameAr}` : `Dr. ${doctor.firstNameEn} ${doctor.lastNameEn}`,
+          specialty: language === 'ar' ? doctor.specialtyAr : doctor.specialtyEn
         }
       }
     });
   };
 
   // Helpers
-  const getDocName = (doc) => language === 'ar' ? `د. ${doc.firstName || ''} ${doc.lastName || ''}` : `Dr. ${doc.firstName || ''} ${doc.lastName || ''}`;
-  const getDocInitials = (doc) => `${(doc.firstName || '')[0] || '?'}${(doc.lastName || '')[0] || ''}`;
+  const getDocName = (doc) => language === 'ar' 
+    ? `د. ${doc.firstNameAr || ''} ${doc.lastNameAr || ''}` 
+    : `Dr. ${doc.firstNameEn || ''} ${doc.lastNameEn || ''}`;
+  const getDocInitials = (doc) => language === 'ar'
+    ? `${(doc.firstNameAr || '')[0] || '?'}${(doc.lastNameAr || '')[0] || ''}`
+    : `${(doc.firstNameEn || '')[0] || '?'}${(doc.lastNameEn || '')[0] || ''}`;
   
   // دالة لعرض اليوم مترجم أو كما هو
   const displayDay = (day) => language === 'ar' ? (daysMap[day] || day) : day;
@@ -177,7 +181,7 @@ export default function PatientDashboard() {
                         </div>
                         <div>
                             <h4 className="font-bold text-dark text-lg group-hover:text-primary transition-colors">{getDocName(doc)}</h4>
-                            <p className="text-sm text-gray-500 font-medium mb-1">{doc.specialty || t('patientDashboard.card.defaultSpecialty')}</p>
+                            <p className="text-sm text-gray-500 font-medium mb-1">{(language === 'ar' ? doc.specialtyAr : doc.specialtyEn) || t('patientDashboard.card.defaultSpecialty')}</p>
                             <div className="flex items-center gap-1 text-xs text-gray-400">
                                 <MapPin size={12} /> <span>{doc.clinicAddress || t('patientDashboard.card.noAddress')}</span>
                             </div>
