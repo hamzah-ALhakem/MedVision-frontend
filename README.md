@@ -1,16 +1,35 @@
-# React + Vite
+# MedVision Frontend 
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB)
+![Vite](https://img.shields.io/badge/vite-%23646CFF.svg?style=for-the-badge&logo=vite&logoColor=white)
+![TailwindCSS](https://img.shields.io/badge/tailwindcss-%2338B2AC.svg?style=for-the-badge&logo=tailwind-css&logoColor=white)
+![React Router](https://img.shields.io/badge/React_Router-CA4245?style=for-the-badge&logo=react-router&logoColor=white)
 
-Currently, two official plugins are available:
+##  About The Project
+This repository contains the presentation layer for **MedVision**, an intelligent breast cancer screening and patient management system. 
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Built as a decoupled Single Page Application (SPA), this frontend provides a highly responsive, component-based user interface. It connects patients with an underlying numerical machine-learning model for decision-support and facilitates secure telemedicine workflows with specialized physicians.
 
-## React Compiler
+##  Core Features
+* **Bilingual Native Support:** Seamless context-based switching between English (Left-To-Right) and Arabic (Right-To-Left) without page reloads, ensuring high accessibility in the MENA region.
+* **AI Screening Interface:** A dedicated form accepting 30 cytological features to communicate with the Flask inference API. Features optional browser-side OCR (via Tesseract.js) to assist in prefilling printed report values.
+* **Role-Based Dashboards:** Distinct protected routes and navigation experiences tailored for Patients, Doctors, and Administrators.
+* **Real-Time Telemedicine UI:** Integrates with Pusher via WebSockets to provide instantaneous, full-duplex chat interfaces for patient-doctor consultations.
+* **Dynamic Doctor Directory & Booking:** Interactive UI mapped to real-time physician availability schedules, driving a `PENDING` to `CONFIRMED` appointment state machine.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+##  Tech Stack
+* **Framework:** React 18
+* **Build Tool:** Vite (for near-instant HMR and fast builds)
+* **Styling:** TailwindCSS
+* **Routing:** React Router v7
+* **State Management:** React Context API (AuthContext, LanguageContext)
+* **HTTP Client:** Axios
 
-## Expanding the ESLint configuration
+##  Local Setup & Installation
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+To run this application locally for development, follow these steps:
+
+**1. Clone the repository:**
+```bash
+git clone [https://github.com/YOUR_GITHUB_USERNAME/medvision-frontend.git](https://github.com/YOUR_GITHUB_USERNAME/medvision-frontend.git)
+cd medvision-frontend
